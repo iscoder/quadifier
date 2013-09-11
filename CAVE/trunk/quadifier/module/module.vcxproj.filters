@@ -150,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="notes.txt" />
+    <None Include="..\readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
