@@ -314,10 +314,23 @@ bool Quadifier::onCreate()
             if ( useTexture ) {
                 // using GL_TEXTURE_2D
 
-			    glx.glFramebufferTexture2D(
-				    GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-				    textureMode, m_target[i].texture, 0
-			    );
+                // important to lock before using glFramebufferTexture2D
+                if ( glx.wglDXLockObjectsNV(
+	                m_interopGLDX, 1,
+	                &m_target[i].object[0]
+                ) == GL_TRUE ) {
+                    // attach colour buffer texture
+			        glx.glFramebufferTexture2D(
+				        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+				        textureMode, m_target[i].texture, 0
+			        );
+
+                    // unlock
+                    glx.wglDXUnlockObjectsNV(
+	                    m_interopGLDX, 1,
+	                    &m_target[i].object[0]
+                    );
+                }
 
                 //glx.glFramebufferTexture2D(
                 //    GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
@@ -331,10 +344,23 @@ bool Quadifier::onCreate()
             } else {
                 // using GL_RENDERBUFFER
 
-			    glx.glFramebufferRenderbuffer(
-				    GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-				    GL_RENDERBUFFER, m_target[i].renderBuffer
-			    );
+                // important to lock before using glFramebufferRenderbuffer
+                if ( glx.wglDXLockObjectsNV(
+	                m_interopGLDX, 1,
+	                &m_target[i].object[0]
+                ) == GL_TRUE ) {
+                    // attach colour renderbuffer
+			        glx.glFramebufferRenderbuffer(
+				        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+				        GL_RENDERBUFFER, m_target[i].renderBuffer
+			        );
+
+                    // unlock
+                    glx.wglDXUnlockObjectsNV(
+	                    m_interopGLDX, 1,
+	                    &m_target[i].object[0]
+                    );
+                }
 
                 //glx.glFramebufferRenderbuffer(
                 //    GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
@@ -375,7 +401,7 @@ bool Quadifier::onCreate()
                 glx.glBindRenderbuffer( GL_RENDERBUFFER, 0 );
             }
 
-			// currently returns GL_FRAMEBUFFER_UNSUPPORTED but works anyway
+			// log the framebuffer status (should be GL_FRAMEBUFFER_COMPLETE)
 			GLenum status = glx.glCheckFramebufferStatus(GL_FRAMEBUFFER);
 			Log::print() << "glCheckFramebufferStatus = " << GLFRAMEBUFFERSTATUStoString( status ) << endl;
 		}
