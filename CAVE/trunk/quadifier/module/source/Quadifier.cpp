@@ -838,6 +838,9 @@ void Quadifier::createResources()
 			// store viewport width and height
 			m_width  = desc.Width;
 			m_height = desc.Height;
+
+            Log::print( "DX render target surface format: " ) <<
+                D3DFORMATtoString( desc.Format ) << endl;
 		} else {
 			// failure: ensure the sample type is initialised to none
 			desc.MultiSampleType = D3DMULTISAMPLE_NONE;

@@ -59,6 +59,11 @@ the NV_DX_interop requires a IDirect3D9Ex and IDirect3DDevice9Ex context.
 Unity doesn't create one of these by default, so Quadifier substitutes the
 appropriate 3D9Ex interfaces at time of creation.
 
+Another issue we have to deal with is that the D3DPOOL_MANAGED pool isn't
+valid when using the Direct3D9Ex context. For this reason, whenever
+D3DPOOL_MANAGED is used, IDirect3DDevice9Proxy translates it into
+D3DPOOL_DEFAULT instead, and sets D3DUSAGE_DYNAMIC so that it can be locked.
+
 There is partial implementation of support for Direct3D11, but more work
 is needed on this as it's a lot more complex. In their wisdom, Microsoft
 provide 6 different ways to create a swap chain and 2 present functions.
