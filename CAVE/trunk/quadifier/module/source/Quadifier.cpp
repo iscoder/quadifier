@@ -786,24 +786,12 @@ void Quadifier::createResources()
 
 	if ( m_target[0].surface != 0 ) return;
 
-	D3DVIEWPORT9 viewport = {};
-	m_device->GetViewport( &viewport );
-	
-	Log::print() << "DX viewport = "
-				 << viewport.Width << 'x' << viewport.Height << endl;
-
-	// store viewport width and height
-	m_width  = viewport.Width;
-	m_height = viewport.Height;
-
 	// store the window handle of the original source window (the window
 	// in the parent Direct3D application)
 	D3DDEVICE_CREATION_PARAMETERS parameters = {};
 	m_device->GetCreationParameters( &parameters );
 	m_sourceWindow = parameters.hFocusWindow;
 	
-	Log::print() << "DX window = " << m_sourceWindow << endl;
-
 	// get the adapter display mode
 	D3DDISPLAYMODE displayMode = {};
 	if ( m_direct3D->GetAdapterDisplayMode( D3DADAPTER_DEFAULT, &displayMode ) != S_OK ) {
@@ -820,10 +808,22 @@ void Quadifier::createResources()
 	IDirect3DSurface9 *renderTarget = 0;
 	if ( m_device->GetRenderTarget( 0, &renderTarget ) == S_OK ) {
 		// get the render target description
-		if ( renderTarget->GetDesc( &desc ) != S_OK ) {
+		if ( renderTarget->GetDesc( &desc ) == S_OK ) {
+			// store viewport width and height
+			m_width  = desc.Width;
+			m_height = desc.Height;
+		} else {
 			// failure: ensure the sample type is initialised to none
 			desc.MultiSampleType = D3DMULTISAMPLE_NONE;
 			Log::print( "error: failed to get render target description\n" );
+
+			// fall back to GetViewport to get viewport dimensions
+			D3DVIEWPORT9 viewport = {};
+			m_device->GetViewport( &viewport );			
+
+			// store viewport width and height
+			m_width  = viewport.Width;
+			m_height = viewport.Height;
 		}
 
 		// release render target
@@ -831,6 +831,9 @@ void Quadifier::createResources()
 	} else {
 		Log::print( "error: failed to get render target\n" );
 	}
+
+	Log::print() << "DX viewport = "
+		<< m_width << 'x' << m_height << endl;
 
 	// multisampling level to use
 	D3DMULTISAMPLE_TYPE multisampleType = desc.MultiSampleType;
@@ -882,8 +885,8 @@ void Quadifier::createResources()
 	for (unsigned i=0; i < m_target.size(); ++i) {
         // create render target
 		if ( m_device->CreateRenderTarget(
-			viewport.Width,
-			viewport.Height,
+			m_width,
+			m_height,
 			displayMode.Format,
 			multisampleType,
 			0,
@@ -897,8 +900,8 @@ void Quadifier::createResources()
 
         // create depth stencil surface
         if ( m_device->CreateDepthStencilSurface(
-            viewport.Width,
-            viewport.Height,
+            m_width,
+            m_height,
             depthStencilDesc.Format,
             multisampleType,
             0,

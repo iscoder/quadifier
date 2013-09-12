@@ -28,7 +28,6 @@
 //-----------------------------------------------------------------------------
 
 #include <d3d9.h>
-#include <d3dx9.h>
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <GL/wglext.h>
