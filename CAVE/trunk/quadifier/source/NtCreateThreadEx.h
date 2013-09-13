@@ -32,6 +32,10 @@
 
 //-----------------------------------------------------------------------------
 
+namespace hive {
+
+//-----------------------------------------------------------------------------
+
 /// Windows Vista kernel sources: probably correct
 typedef struct _CLIENT_ID {
 	PVOID UniqueProcess;
@@ -94,6 +98,10 @@ HANDLE SimpleNtCreateThreadEx(
 	LPTHREAD_START_ROUTINE lpStartAddress,
 	LPVOID lpParameter
 );
+
+//-----------------------------------------------------------------------------
+
+} // namespace hive
 
 //-----------------------------------------------------------------------------
 

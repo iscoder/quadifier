@@ -26,6 +26,10 @@
 //
 //-----------------------------------------------------------------------------
 
+using namespace hive;
+
+//-----------------------------------------------------------------------------
+
 /// Function pointer to the undocumented NtCreateThreadEx function
 typedef NTSTATUS (WINAPI *LPFN_NtCreateThreadEx)
 (
@@ -129,7 +133,7 @@ HANDLE SimpleNtCreateThreadEx(
 	HANDLE hThread = 0;
 
 	// Create the thread
-	NtCreateThreadEx(
+	::NtCreateThreadEx(
 		&hThread,		// returns thread handle
 		GENERIC_ALL,	// access rights
 		0,
