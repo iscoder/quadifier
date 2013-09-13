@@ -39,17 +39,22 @@
 
 //-----------------------------------------------------------------------------
 
+/// Quadifier is the main implementation of the Direct3D to OpenGL renderer
 class Quadifier {
 public:
+    /// Constructor
 	Quadifier(
 		IDirect3DDevice9 *device,
 		IDirect3D9 *direct3D
 	);
 
+    /// Destructor
 	virtual ~Quadifier();
 
+    /// Called when D3D device is created
 	void onCreateDX();
 
+    /// Called immediately before D3D Clear
 	void onPreClearDX(
 		DWORD Count,
 		CONST D3DRECT *pRects,
@@ -59,8 +64,10 @@ public:
 		DWORD Stencil
 	);
 
+    /// Called immediately after D3D Clear
 	void onPostClearDX();
 
+    /// Called immediately before D3D Present
 	void onPrePresentDX(
 		CONST RECT *pSourceRect,
 		CONST RECT *pDestRect,
@@ -68,24 +75,36 @@ public:
 		CONST RGNDATA *pDirtyRegion
 	);
 
+    /// Called immediately after D3D Present
 	void onPostPresentDX();
 
+private:
+    /// Create D3D resources (render targets)
 	void createResources();
 
-	void createWindow();
+    /// Start OpenGL rendering thread
+	void startRenderThread();
 
+    /// Called when OpenGL window is created
 	bool onCreate();
 
+    /// Called when OpenGL window is destroyed
 	void onDestroy();
 
+    /// Called when OpenGL window is painted
 	void onPaint();
 	
+    /// Called when OpenGL window is resized
 	void onResize( UINT type, int w, int h );
 
+    /// Called to perform idle processing
 	void onIdle();
 
+    /// Request a redraw
 	void redraw();
 
+public:
+    /// The WIN32 WindowProc for the OpenGL window
 	LRESULT CALLBACK windowProc(
 		HWND hWnd,      // handle to window
 		UINT uMsg,      // message identifier
@@ -93,6 +112,7 @@ public:
 		LPARAM lParam   // second message parameter
 	);
 	
+    /// OpenGL rendering thread function
 	static unsigned __stdcall threadFunc( void *context );
 
 private:
@@ -104,9 +124,9 @@ private:
 	void sendFrame();
 
 private:
-	IDirect3DDevice9	*m_device;
-	IDirect3D9			*m_direct3D;
-	LPDIRECT3DSURFACE9	 m_backBuffer;
+	IDirect3DDevice9	*m_device;      ///< The Direct3D device
+	IDirect3D9			*m_direct3D;    ///< The Direct3D interface
+	LPDIRECT3DSURFACE9	 m_backBuffer;  ///< The back buffer for rendering
 
 	unsigned m_framesGL;	///< OpenGL frame count
 	unsigned m_fieldsGL;	///< OpenGL field count
@@ -123,28 +143,25 @@ private:
 	unsigned m_width;		///< display width in pixels
 	unsigned m_height;		///< display height in pixels
 
+    /// Stores all the details of an individual render target
 	struct Target {
         LPDIRECT3DSURFACE9  surface;        ///< Direct3D surface
-        LPDIRECT3DSURFACE9  depthSurface;   ///< Direct3D depth/stencil surface
-        std::tr1::array<HANDLE,2> object;   ///< Handle of interop object(s)
+        HANDLE              object;         ///< Handle of interop object
         GLuint              texture;        ///< OpenGL texture
-        GLuint              depthTexture;   ///< OpenGL depth texture
         GLuint              renderBuffer;   ///< OpenGL renderbuffer
-        GLuint              depthBuffer;    ///< OpenGL depth buffer
         GLuint              frameBuffer;    ///< OpenGL framebuffer
 
+        /// Default constructor
 		Target() :
 			surface(0),
-            depthSurface(0),
+            object(0),
             texture(0),
-            depthTexture(0),
 			renderBuffer(0),
-            depthBuffer(0),
             frameBuffer(0)
 		{
-            object.fill(0);
 		}
 
+        /// Clear the contents (free stored data)
 		void clear() {
 			if ( surface != 0 ) {
 				surface->Release();
@@ -164,20 +181,20 @@ private:
 
 	unsigned m_channelRenderCount;	///< number of channels rendered
 
-	uintptr_t m_thread;
+	uintptr_t m_thread;     ///< Handle of the rendering thread
 
 	HWND m_sourceWindow;	///< Window handle of source (Direct3D)
 
-	HANDLE m_interopGLDX;
+	HANDLE m_interopGLDX;   ///< Handle for the OpenGL/DX interop
 
-	Event m_newFrame;
-	Event m_frameDone;
+	Event m_newFrame;       ///< Signals that a new frame arrived
+	Event m_frameDone;      ///< Signals when frame is rendered out
 
-	CriticalSection m_swapLock;
+	CriticalSection m_swapLock;     ///< Critical section for buffer swaps
 
-    Extensions glx;
+    Extensions glx;         ///< Stores the OpenGL extension functions
 
-    GLWindow m_window;
+    GLWindow m_window;      ///< The OpenGL output window
 };
 
 //-----------------------------------------------------------------------------

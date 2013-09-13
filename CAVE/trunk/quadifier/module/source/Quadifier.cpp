@@ -79,9 +79,11 @@ Quadifier::~Quadifier()
 {
 	Log::print( "~Quadifier\n" );
 
+    // clear all the render targets
 	for (unsigned i = 0; i < m_target.size(); ++i)
 		m_target[i].clear();
 
+    // release the backbuffer
 	if ( m_backBuffer != 0 ) {
 		m_backBuffer->Release();
 		m_backBuffer = 0;
@@ -158,7 +160,7 @@ void Quadifier::onPrePresentDX(
 	// send frame to GL display thread
 	sendFrame();
 
-	// set the render target to the back buffer again
+	// this would set the render target to the back buffer again
 	//m_device->SetRenderTarget( 0, m_backBuffer );
 }//onPrePresentDX
 
@@ -166,9 +168,13 @@ void Quadifier::onPrePresentDX(
 
 void Quadifier::onPostPresentDX()
 {
-	// enable stereo mode if there are several clears per frame
+	// remember current stereo mode
 	bool oldStereo = m_stereoMode;
+
+    // enable stereo mode if there are several clears per frame
 	m_stereoMode = (m_clearCount > 1);
+
+    // if stereo mode has changed, output a message to the log
 	if ( oldStereo != m_stereoMode )
 		Log::print( "Stereo " ) <<
 			(m_stereoMode ? "enabled" : "disabled") << endl;
@@ -182,6 +188,7 @@ void Quadifier::onPostPresentDX()
 
 bool Quadifier::onCreate()
 {
+    // log some general information about the OpenGL renderer
 	Log::print( "GL Version : " ) << glGetString( GL_VERSION )  << endl;
 	Log::print( "GL Vendor  : " ) << glGetString( GL_VENDOR )   << endl;
 	Log::print( "GL Renderer: " ) << glGetString( GL_RENDERER ) << endl;
@@ -234,13 +241,6 @@ bool Quadifier::onCreate()
 				    Log::print( "error: failed to generate texture ID\n" );
 				    break;
 			    }
-
-                glGenTextures( 1, &m_target[i].depthTexture );
-
-                if ( m_target[i].depthTexture == 0 ) {
-                    Log::print( "error: failed to generate depth texture ID\n" );
-                    break;
-                }
             } else {
                 // using GL_RENDERBUFFER
 			    glx.glGenRenderbuffers( 1, &m_target[i].renderBuffer );
@@ -249,28 +249,10 @@ bool Quadifier::onCreate()
 				    Log::print( "error: failed to generate render buffer ID\n" );
 				    break;
 			    }
-
-                glx.glGenRenderbuffers( 1, &m_target[i].depthBuffer );
-
-                if ( m_target[i].depthBuffer == 0 ) {
-                    Log::print( "error: failed to generate depth render buffer ID\n" );
-                    break;
-                }
-
-                glx.glBindRenderbuffer( GL_RENDERBUFFER, m_target[i].depthBuffer );
-
-                glx.glRenderbufferStorage(
-                    GL_RENDERBUFFER,
-                    GL_DEPTH_COMPONENT,
-                    m_width,
-                    m_height
-                );
-
-                glx.glBindRenderbuffer( GL_RENDERBUFFER, 0 );
             }
 
 			Log::print( "registering DX object " ) << i << endl;
-			m_target[i].object[0] = glx.wglDXRegisterObjectNV(
+			m_target[i].object = glx.wglDXRegisterObjectNV(
 				m_interopGLDX,
 				m_target[i].surface,
 				useTexture ? m_target[i].texture : m_target[i].renderBuffer,
@@ -278,25 +260,9 @@ bool Quadifier::onCreate()
 				WGL_ACCESS_READ_ONLY_NV
 			);
 
-			if ( m_target[i].object[0] == 0 ) {
+			if ( m_target[i].object == 0 ) {
                 DWORD error = GetLastError();
 				Log::print( "error: wglDXRegisterObjectNV failed for render target: " )
-                    << formatErrorMessage(error);
-				break;
-			}
-
-            // register depth buffer
-            m_target[i].object[1] = glx.wglDXRegisterObjectNV(
-				m_interopGLDX,
-				m_target[i].depthSurface,
-				useTexture ? m_target[i].depthTexture : m_target[i].depthBuffer,
-				useTexture ? textureMode : GL_RENDERBUFFER,
-				WGL_ACCESS_READ_ONLY_NV
-			);
-
-			if ( m_target[i].object[1] == 0 ) {
-                DWORD error = GetLastError();
-				Log::print( "error: wglDXRegisterObjectNV failed for depth render target: " )
                     << formatErrorMessage(error);
 				break;
 			}
@@ -317,7 +283,7 @@ bool Quadifier::onCreate()
                 // important to lock before using glFramebufferTexture2D
                 if ( glx.wglDXLockObjectsNV(
 	                m_interopGLDX, 1,
-	                &m_target[i].object[0]
+	                &m_target[i].object
                 ) == GL_TRUE ) {
                     // attach colour buffer texture
 			        glx.glFramebufferTexture2D(
@@ -328,26 +294,16 @@ bool Quadifier::onCreate()
                     // unlock
                     glx.wglDXUnlockObjectsNV(
 	                    m_interopGLDX, 1,
-	                    &m_target[i].object[0]
+	                    &m_target[i].object
                     );
                 }
-
-                //glx.glFramebufferTexture2D(
-                //    GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                //    textureMode, m_target[i].depthTexture, 0
-                //);
-
-                //glx.glFramebufferTexture2D(
-                //    GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
-                //    textureMode, m_target[i].depthTexture, 0
-                //);
             } else {
                 // using GL_RENDERBUFFER
 
                 // important to lock before using glFramebufferRenderbuffer
                 if ( glx.wglDXLockObjectsNV(
 	                m_interopGLDX, 1,
-	                &m_target[i].object[0]
+	                &m_target[i].object
                 ) == GL_TRUE ) {
                     // attach colour renderbuffer
 			        glx.glFramebufferRenderbuffer(
@@ -358,19 +314,9 @@ bool Quadifier::onCreate()
                     // unlock
                     glx.wglDXUnlockObjectsNV(
 	                    m_interopGLDX, 1,
-	                    &m_target[i].object[0]
+	                    &m_target[i].object
                     );
                 }
-
-                //glx.glFramebufferRenderbuffer(
-                //    GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                //    GL_RENDERBUFFER, m_target[i].depthBuffer
-                //);
-
-                //glx.glFramebufferRenderbuffer(
-                //    GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
-                //    GL_RENDERBUFFER, m_target[i].depthBuffer
-                //);
 
                 // this table defines the renderbuffer parameters to be listed
                 struct {
@@ -469,9 +415,9 @@ void Quadifier::onPaint()
 	}
 
 	// lock the shared DX/GL render target
-	if ( (m_target[readBuffer].object[0] != 0) && glx.wglDXLockObjectsNV(
+	if ( (m_target[readBuffer].object != 0) && glx.wglDXLockObjectsNV(
 		m_interopGLDX, 1,
-		&m_target[readBuffer].object[0]
+		&m_target[readBuffer].object
 	) == GL_TRUE) {
 		
 		glx.glBindFramebuffer( GL_FRAMEBUFFER, 0 );
@@ -489,7 +435,7 @@ void Quadifier::onPaint()
 		// unlock the shared DX/GL target
 		glx.wglDXUnlockObjectsNV(
 			m_interopGLDX, 1,
-			&m_target[m_readBuffer].object[0]
+			&m_target[m_readBuffer].object
 		);
 	} else
 		Log::print() << "unable to lock DX target on paint\n";
@@ -773,8 +719,6 @@ void Quadifier::sendFrame()
 		} while ( m_drawBuffer == m_readBuffer );
 	}
 
-	//Log::print( "send\n" );
-
 	// signal that a new frame has been rendered
 	m_newFrame.signal();
 
@@ -896,6 +840,8 @@ void Quadifier::createResources()
     D3DSURFACE_DESC depthStencilDesc = {};
     depthStencilDesc.Format = D3DFMT_D24S8;
 
+    // display some information about the depth/stencil format
+    // (purely informational, not required currently)
     if ( m_device->GetDepthStencilSurface( &depthStencilSurface ) == S_OK ) {
         // get the surface description
 		if ( depthStencilSurface->GetDesc( &depthStencilDesc ) == S_OK ) {
@@ -926,33 +872,18 @@ void Quadifier::createResources()
 			Log::print( "error: failed to create DX render target\n" );
 			break;
 		}
-
-        // create depth stencil surface
-        if ( m_device->CreateDepthStencilSurface(
-            m_width,
-            m_height,
-            depthStencilDesc.Format,
-            multisampleType,
-            0,
-            FALSE,
-            &m_target[i].depthSurface,
-            0
-        ) != S_OK ) {
-            Log::print( "error: failed to create DX depth/stencil surface\n" );
-            break;
-        }
 	}
 
 	// get the current render target and save for later use
 	m_device->GetRenderTarget( 0, &m_backBuffer );
 
 	// create window
-	createWindow();
+	startRenderThread();
 }
 
 //-----------------------------------------------------------------------------
 
-void Quadifier::createWindow()
+void Quadifier::startRenderThread()
 {
 	Log::print( "starting GL rendering thread\n" );
 
