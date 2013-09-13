@@ -38,7 +38,8 @@ const Settings & Settings::get()
 Settings::Settings() :
 	passThrough( false ),
     forceDirect3D9Ex( false ),
-    useTexture( false )
+    useTexture( false ),
+    preventModeChange( true )
 {
 	// initialise OS version info structure
 	OSVERSIONINFO info = {};

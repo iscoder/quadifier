@@ -51,7 +51,15 @@ typedef HRESULT (WINAPI *PFNCreateDXGIFactory)(REFIID riid, void **ppFactory);
 
 typedef HRESULT (WINAPI *PFNCreateDXGIFactory1)(REFIID riid, void **ppFactory);
 
-//-----------------------------------------------------------------------------
+typedef LONG (WINAPI *PFNChangeDisplaySettingsEx)(
+  _In_  LPCTSTR lpszDeviceName,
+  _In_  DEVMODE *lpDevMode,
+  HWND hWnd,
+  _In_  DWORD dwFlags,
+  _In_  LPVOID lParam
+);
+
+//----------------------------------------  -------------------------------------
 
 PFNGetProcAddress real_GetProcAddress = reinterpret_cast<PFNGetProcAddress>(
 	GetProcAddress( GetModuleHandle(L"kernel32"), "GetProcAddress" ) );
@@ -78,6 +86,11 @@ PFNCreateDXGIFactory real_CreateDXGIFactory1 =
 	reinterpret_cast<PFNCreateDXGIFactory1>(
 		GetProcAddress( GetModuleHandle(L"dxgi"), "CreateDXGIFactory1" )
 	);
+
+PFNChangeDisplaySettingsEx real_ChangeDisplaySettingsEx =
+    reinterpret_cast<PFNChangeDisplaySettingsEx>(
+        GetProcAddress( GetModuleHandle(L"user32"), "ChangeDisplaySettingsExA" )
+    );
 
 //-----------------------------------------------------------------------------
 
@@ -259,6 +272,29 @@ HRESULT WINAPI fake_CreateDXGIFactory1( REFIID riid, void **ppFactory )
 
 //-----------------------------------------------------------------------------
 
+LONG WINAPI fake_ChangeDisplaySettingsEx(
+    _In_  LPCTSTR lpszDeviceName,
+    _In_  DEVMODE *lpDevMode,
+    HWND hWnd,
+    _In_  DWORD dwFlags,
+    _In_  LPVOID lParam
+) {
+    // to prevent display mode being changed, we set the CDS_TEST flag
+    if ( Settings::get().preventModeChange )
+        dwFlags |= CDS_TEST;
+
+    // call the real function
+    return real_ChangeDisplaySettingsEx(
+        lpszDeviceName,
+        lpDevMode,
+        hWnd,
+        dwFlags,
+        lParam
+    );
+}
+
+//-----------------------------------------------------------------------------
+
 FARPROC WINAPI fake_GetProcAddress(
 	HMODULE hModule,
 	LPCSTR lpProcName
@@ -324,6 +360,13 @@ void processAttach()
 	)
 		MessageBox( 0, L"Failed to hook CreateDXGIFactory1", L"Error", MB_OK );
 
+    // hook ChangeDisplaySettingsEx
+  	if ( (real_ChangeDisplaySettingsEx == 0) ||
+		 !Mhook_SetHook( reinterpret_cast<PVOID*>(&real_ChangeDisplaySettingsEx),
+			fake_ChangeDisplaySettingsEx )
+	)
+		MessageBox( 0, L"Failed to hook ChangeDisplaySettingsEx", L"Error", MB_OK );
+
 	// hook GetProcAddress so that we can return our fake Direct3DCreate9
 	if ( (real_GetProcAddress == 0) ||
 		 !Mhook_SetHook( reinterpret_cast<PVOID*>(&real_GetProcAddress),
@@ -338,6 +381,7 @@ void processDetach() {
 	Log::print( "DLL_PROCESS_DETACH" );
 
 	Mhook_Unhook( reinterpret_cast<PVOID*>(&real_GetProcAddress)  );
+    Mhook_Unhook( reinterpret_cast<PVOID*>(&real_ChangeDisplaySettingsEx) );
 	Mhook_Unhook( reinterpret_cast<PVOID*>(&real_Direct3DCreate9) );
 	Mhook_Unhook( reinterpret_cast<PVOID*>(&real_D3D11CreateDevice) );
 	Mhook_Unhook( reinterpret_cast<PVOID*>(&real_D3D11CreateDeviceAndSwapChain) );
