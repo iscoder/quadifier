@@ -33,6 +33,7 @@
 
 //-----------------------------------------------------------------------------
 
+/// This class represents an OpenGL window under WIN32
 class GLWindow {
 public:
     /// Default constructor
@@ -91,8 +92,10 @@ public:
     unsigned getSamples() const;
 
 private:
+    /// Copy construction is unsupported
     GLWindow( const GLWindow & );
 
+    /// Assignment is unsupported
     GLWindow & operator = ( const GLWindow & );
 
 private:

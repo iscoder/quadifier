@@ -42,6 +42,7 @@ IDirect3DDevice9Proxy::IDirect3DDevice9Proxy(
 	Log::print() << "IDirect3DDevice9Proxy("
 		<< device << ',' << direct3D << ")\n";
 
+    // when the D3D device is created, call onCreateDX
 	if ( !Settings::get().passThrough ) m_quad.onCreateDX();
 }
 

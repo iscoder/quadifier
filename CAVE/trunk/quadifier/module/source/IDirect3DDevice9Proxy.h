@@ -170,11 +170,11 @@ public:
     STDMETHOD(CreateQuery)(THIS_ D3DQUERYTYPE Type,IDirect3DQuery9** ppQuery);
 
 private:
-	IDirect3DDevice9 *m_device;
+	IDirect3DDevice9 *m_device; ///< The real D3D device
 
-	IDirect3D9 *m_direct3D;
+	IDirect3D9 *m_direct3D;     ///< The D3D interface
 
-	Quadifier m_quad;
+	Quadifier m_quad;           ///< The DX/OpenGL renderer instance
 };
 
 //-----------------------------------------------------------------------------
