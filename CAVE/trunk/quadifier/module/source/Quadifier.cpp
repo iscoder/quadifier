@@ -152,8 +152,8 @@ void Quadifier::onPostClearDX()
 	// wait until the frame has been rendered out, to keep the OpenGL and
 	// Direct3D threads loosely synchronised
 	// (after 1/60th of a second we timeout and return in any case)
-	static const unsigned timeout =  static_cast<unsigned>(1000.0/60.0 + 0.5);
-	m_frameDone.wait( timeout );
+	//static const unsigned timeout =  static_cast<unsigned>(1000.0/60.0 + 0.5);
+	//m_frameDone.wait( timeout );
 }
 
 //-----------------------------------------------------------------------------
