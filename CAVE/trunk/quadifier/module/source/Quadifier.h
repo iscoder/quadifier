@@ -32,6 +32,7 @@
 #include <GL/glext.h>
 #include <GL/wglext.h>
 #include <array>
+#include <set>
 #include "Event.h"
 #include "CriticalSection.h"
 #include "Extensions.h"
@@ -123,6 +124,13 @@ private:
 	 */
 	void sendFrame();
 
+    /**
+     * Returns true if the current render target has ever been presented
+     * (which we use to detect render targets that are actually displayed,
+     * rather than the various off screen render targets).
+     */
+    bool isPresentedRenderTarget() const;
+
 private:
 	IDirect3DDevice9	*m_device;      ///< The Direct3D device
 	IDirect3D9			*m_direct3D;    ///< The Direct3D interface
@@ -142,6 +150,11 @@ private:
 
 	unsigned m_width;		///< display width in pixels
 	unsigned m_height;		///< display height in pixels
+
+    bool m_initialised;     ///< has initialisation completed?
+
+    /// Set of all render targets that have been presented
+    std::set< unsigned > m_presentedTargets;
 
     /// Stores all the details of an individual render target
 	struct Target {

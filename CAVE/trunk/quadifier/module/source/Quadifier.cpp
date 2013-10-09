@@ -68,6 +68,7 @@ Quadifier::Quadifier(
 	// m_swapLock implict
 	m_width  = 0;
 	m_height = 0;
+    m_initialised = false;
 
 	// have we got stereo support?
 	m_stereoAvailable = isOpenGLStereoAvailable();
@@ -106,7 +107,10 @@ void Quadifier::onPreClearDX(
 	float Z,
 	DWORD Stencil
 ) {
-	if ( m_framesDX == 0 ) {
+    // is this the main display render target?
+    if ( !isPresentedRenderTarget() ) return;
+
+    if ( !m_initialised ) {
 		// the first time we are called, we will create the resources
 		// (render targets) - i.e. after the  parent window has been
         // created at the correct size
@@ -139,6 +143,9 @@ void Quadifier::onPreClearDX(
 
 void Quadifier::onPostClearDX()
 {
+    // is this the main display render target?
+    if ( !isPresentedRenderTarget() ) return;
+
 	// count number of clears per frame
 	++m_clearCount;
 
@@ -157,6 +164,22 @@ void Quadifier::onPrePresentDX(
 	HWND hDestWindowOverride,
 	CONST RGNDATA *pDirtyRegion
 ) {
+    // get the current render target
+    IDirect3DSurface9 *renderTarget = 0;
+    if ( m_device->GetRenderTarget( 0, &renderTarget ) == S_OK ) {
+
+        // insert the render target in the set of presented targets
+        // if not already present
+        m_presentedTargets.insert(
+            reinterpret_cast<unsigned>(renderTarget)
+        );
+
+        // verbose logging
+        if ( m_verbose ) {
+            Log::print() << "Presenting Render Target: " << renderTarget << endl;
+        }
+    }
+
 	// send frame to GL display thread
 	sendFrame();
 
@@ -728,6 +751,47 @@ void Quadifier::sendFrame()
 
 //-----------------------------------------------------------------------------
 
+bool Quadifier::isPresentedRenderTarget() const
+{
+    // ensure that we have a device
+    if ( m_device == 0 ) return false;
+
+    // receives a pointer to the render target (surface)
+    IDirect3DSurface9 *renderTarget = 0;
+
+    // receives hash generated from render target pointer
+    unsigned hash = 0;
+
+    // get the current render target
+    if ( m_device->GetRenderTarget( 0, &renderTarget ) == S_OK ) {
+        // if verbose logging is enabled
+        if ( m_verbose ) {
+            // render target description
+            D3DSURFACE_DESC desc = {};
+
+            // get the render target description
+            if ( renderTarget->GetDesc( &desc ) == S_OK ) {
+                // display render target details
+                Log::print() << "Render target: " <<
+                    renderTarget << ',' <<
+                    D3DFORMATtoString( desc.Format ) << ',' <<
+                    desc.Width << 'x' << desc.Height << endl;
+            }
+        }
+
+        // use the renderTarget pointer as a simple hash
+        hash = reinterpret_cast<unsigned>( renderTarget );
+
+        // release render target
+        renderTarget->Release();
+    }
+
+    // has this render target been presented?
+    return ( m_presentedTargets.find(hash) != m_presentedTargets.end() );
+}//isPresentedRenderTarget
+
+//-----------------------------------------------------------------------------
+
 void Quadifier::createResources()
 {
     // in case the graphics driver settings are forcing multisampling (e.g. the
@@ -879,6 +943,9 @@ void Quadifier::createResources()
 
 	// create window
 	startRenderThread();
+
+    // we have completed initialisation
+    m_initialised = true;
 }
 
 //-----------------------------------------------------------------------------
