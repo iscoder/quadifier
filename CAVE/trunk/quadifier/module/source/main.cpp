@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <mhook-lib/mhook.h>
 #include <d3d9.h>
+#include <atlconv.h>
 #include "IDirect3D9Proxy.h"
 
 #if defined(SUPPORT_D3D11)
@@ -66,6 +67,36 @@ typedef LONG (WINAPI *PFNChangeDisplaySettingsEx)(
   _In_  LPVOID lParam
 );
 
+typedef HWND (WINAPI *PFNCreateWindowExA)(
+    __in DWORD dwExStyle,
+    __in_opt LPCSTR lpClassName,
+    __in_opt LPCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int X,
+    __in int Y,
+    __in int nWidth,
+    __in int nHeight,
+    __in_opt HWND hWndParent,
+    __in_opt HMENU hMenu,
+    __in_opt HINSTANCE hInstance,
+    __in_opt LPVOID lpParam
+);
+
+typedef HWND (WINAPI *PFNCreateWindowExW)(
+    __in DWORD dwExStyle,
+    __in_opt LPCWSTR lpClassName,
+    __in_opt LPCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int X,
+    __in int Y,
+    __in int nWidth,
+    __in int nHeight,
+    __in_opt HWND hWndParent,
+    __in_opt HMENU hMenu,
+    __in_opt HINSTANCE hInstance,
+    __in_opt LPVOID lpParam
+);
+
 //----------------------------------------  -------------------------------------
 
 PFNGetProcAddress real_GetProcAddress = reinterpret_cast<PFNGetProcAddress>(
@@ -88,6 +119,17 @@ PFNChangeDisplaySettingsEx real_ChangeDisplaySettingsEx =
     reinterpret_cast<PFNChangeDisplaySettingsEx>(
         GetProcAddress( GetModuleHandle(L"user32"), "ChangeDisplaySettingsExA" )
     );
+
+PFNCreateWindowExA real_CreateWindowExA =
+	reinterpret_cast<PFNCreateWindowExA>(
+        GetProcAddress( GetModuleHandle(L"user32"), "CreateWindowExA" )
+    );
+
+PFNCreateWindowExW real_CreateWindowExW =
+	reinterpret_cast<PFNCreateWindowExW>(
+        GetProcAddress( GetModuleHandle(L"user32"), "CreateWindowExW" )
+    );
+
 
 //-----------------------------------------------------------------------------
 
@@ -329,6 +371,90 @@ LONG WINAPI fake_ChangeDisplaySettingsEx(
 
 //-----------------------------------------------------------------------------
 
+HWND WINAPI fake_CreateWindowExA(
+    __in DWORD dwExStyle,
+    __in_opt LPCSTR lpClassName,
+    __in_opt LPCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int X,
+    __in int Y,
+    __in int nWidth,
+    __in int nHeight,
+    __in_opt HWND hWndParent,
+    __in_opt HMENU hMenu,
+    __in_opt HINSTANCE hInstance,
+	__in_opt LPVOID lpParam
+) {
+    Log::print() << "CreateWindowExA("
+        << ((HIWORD(lpClassName)  != 0)?lpClassName:"?") << ','
+        << ((HIWORD(lpWindowName) != 0)?lpWindowName:"?") << ','
+        << X << ','
+        << Y << ' '
+        << nWidth << 'x'
+        << nHeight << ")\n";
+
+	// call the real function
+    return real_CreateWindowExA(
+        dwExStyle,
+        lpClassName,
+        lpWindowName,
+        dwStyle,
+        X,
+		Y,
+		nWidth,
+		nHeight,
+		hWndParent,
+		hMenu,
+		hInstance,
+		lpParam
+	);
+}
+
+//-----------------------------------------------------------------------------
+
+HWND WINAPI fake_CreateWindowExW(
+    __in DWORD dwExStyle,
+    __in_opt LPCWSTR lpClassName,
+    __in_opt LPCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int X,
+    __in int Y,
+    __in int nWidth,
+    __in int nHeight,
+    __in_opt HWND hWndParent,
+    __in_opt HMENU hMenu,
+    __in_opt HINSTANCE hInstance,
+	__in_opt LPVOID lpParam
+) {
+    USES_CONVERSION;
+
+    Log::print() << "CreateWindowExW("
+        << ((HIWORD(lpClassName)  != 0)?W2A(lpClassName):"?") << ','
+        << ((HIWORD(lpWindowName) != 0)?W2A(lpWindowName):"?") << ','
+        << X << ','
+        << Y << ' '
+        << nWidth << 'x'
+        << nHeight << ")\n";
+
+	// call the real function
+    return real_CreateWindowExW(
+        dwExStyle,
+        lpClassName,
+        lpWindowName,
+        dwStyle,
+        X,
+		Y,
+		nWidth,
+		nHeight,
+		hWndParent,
+		hMenu,
+		hInstance,
+		lpParam
+	);
+}
+
+//-----------------------------------------------------------------------------
+
 FARPROC WINAPI fake_GetProcAddress(
 	HMODULE hModule,
 	LPCSTR lpProcName
@@ -405,6 +531,20 @@ void processAttach()
 	)
 		MessageBox( 0, L"Failed to hook ChangeDisplaySettingsEx", L"Error", MB_OK );
 
+	// hook CreateWindowEx
+  	if ( (real_CreateWindowExA == 0) ||
+		 !Mhook_SetHook( reinterpret_cast<PVOID*>(&real_CreateWindowExA),
+			fake_CreateWindowExA )
+	)
+		MessageBox( 0, L"Failed to hook CreateWindowExA", L"Error", MB_OK );
+
+    // hook CreateWindowExW
+  	if ( (real_CreateWindowExW == 0) ||
+		 !Mhook_SetHook( reinterpret_cast<PVOID*>(&real_CreateWindowExW),
+			fake_CreateWindowExW )
+	)
+		MessageBox( 0, L"Failed to hook CreateWindowExW", L"Error", MB_OK );
+
 	// hook GetProcAddress so that we can return our fake Direct3DCreate9
 	if ( (real_GetProcAddress == 0) ||
 		 !Mhook_SetHook( reinterpret_cast<PVOID*>(&real_GetProcAddress),
@@ -419,6 +559,8 @@ void processDetach() {
 	Log::print( "DLL_PROCESS_DETACH" );
 
 	Mhook_Unhook( reinterpret_cast<PVOID*>(&real_GetProcAddress)  );
+    Mhook_Unhook( reinterpret_cast<PVOID*>(&real_CreateWindowExW) );
+	Mhook_Unhook( reinterpret_cast<PVOID*>(&real_CreateWindowExA) );
     Mhook_Unhook( reinterpret_cast<PVOID*>(&real_ChangeDisplaySettingsEx) );
 	Mhook_Unhook( reinterpret_cast<PVOID*>(&real_Direct3DCreate9) );
 
