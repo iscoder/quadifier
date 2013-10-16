@@ -99,15 +99,12 @@ std::string GUIDtoObjectName( const GUID & guid )
 	// buffer to receive name
 	char buffer[256];
 	DWORD bufferSize = sizeof(buffer);
-
-	// look up object name in registry (won't always be successful)
-	if ( RegGetValueA(
+	if ( RegQueryValueExA(
 		HKEY_CLASSES_ROOT,
 		fullPath.c_str(),
 		0,
-		RRF_RT_REG_SZ,
 		0,
-		buffer,
+		reinterpret_cast<LPBYTE>(buffer),
 		&bufferSize
 	) == ERROR_SUCCESS) {
 		return buffer;
