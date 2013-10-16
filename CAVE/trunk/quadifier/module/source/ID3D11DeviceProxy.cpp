@@ -1,3 +1,5 @@
+#if defined(SUPPORT_D3D11)
+
 #include "ID3D11DeviceProxy.h"
 #include "Log.h"
 #include "DebugUtil.h"
@@ -556,3 +558,5 @@ UINT STDMETHODCALLTYPE ID3D11DeviceProxy::GetExceptionMode()
 }
 
 //-----------------------------------------------------------------------------
+
+#endif//SUPPORT_D3D11

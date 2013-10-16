@@ -1,4 +1,4 @@
-#ifndef hive_DXGIDeviceProxy_h
+#if !defined(hive_DXGIDeviceProxy_h) && (defined(SUPPORT_D3D11))
 #define hive_DXGIDeviceProxy_h
 
 //-----------------------------------------------------------------------------

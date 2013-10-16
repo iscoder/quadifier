@@ -1,3 +1,5 @@
+#if defined(SUPPORT_D3D11)
+
 #include "DXGISwapChainProxy.h"
 #include "Log.h"
 #include "DebugUtil.h"
@@ -211,3 +213,5 @@ HRESULT STDMETHODCALLTYPE DXGISwapChainProxy::GetDevice(
 }
 
 //-----------------------------------------------------------------------------
+
+#endif//SUPPORT_D3D11

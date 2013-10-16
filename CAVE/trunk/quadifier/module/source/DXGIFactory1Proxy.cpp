@@ -1,3 +1,5 @@
+#if defined(SUPPORT_D3D11)
+
 #include "DXGIFactory1Proxy.h"
 #include "Log.h"
 #include "DebugUtil.h"
@@ -167,3 +169,5 @@ BOOL STDMETHODCALLTYPE DXGIFactory1Proxy::IsCurrent()
 }
 
 //-----------------------------------------------------------------------------
+
+#endif//SUPPORT_D3D11

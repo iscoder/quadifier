@@ -1,4 +1,4 @@
-#ifndef hive_ID3D11DeviceContextProxy_h
+#if !defined(hive_ID3D11DeviceContextProxy_h) && (defined(SUPPORT_D3D11))
 #define hive_ID3D11DeviceContextProxy_h
 
 //-----------------------------------------------------------------------------

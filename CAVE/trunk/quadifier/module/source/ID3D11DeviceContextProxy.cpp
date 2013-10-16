@@ -1,3 +1,5 @@
+#if defined(SUPPORT_D3D11)
+
 #include "ID3D11DeviceContextProxy.h"
 #include "Log.h"
 #include "DebugUtil.h"
@@ -1167,3 +1169,5 @@ ULONG STDMETHODCALLTYPE ID3D11DeviceContextProxy::Release()
 }
 
 //-----------------------------------------------------------------------------
+
+#endif//SUPPORT_D3D11

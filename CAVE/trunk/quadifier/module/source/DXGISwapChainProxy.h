@@ -1,4 +1,4 @@
-#ifndef hive_DXGISwapChainProxy_h
+#if !defined(hive_DXGISwapChainProxy_h) && (defined(SUPPORT_D3D11))
 #define hive_DXGISwapChainProxy_h
 
 //-----------------------------------------------------------------------------

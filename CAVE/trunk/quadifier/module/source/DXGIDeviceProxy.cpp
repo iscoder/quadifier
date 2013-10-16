@@ -1,3 +1,5 @@
+#if defined(SUPPORT_D3D11)
+
 #include "DXGIDeviceProxy.h"
 #include "Log.h"
 #include "DebugUtil.h"
@@ -189,3 +191,5 @@ HRESULT STDMETHODCALLTYPE DXGIDeviceProxy::GetParent(
 }
 
 //-----------------------------------------------------------------------------
+
+#endif//SUPPORT_D3D11

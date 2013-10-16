@@ -1,4 +1,4 @@
-#ifndef hive_DXGIFactory1Proxy_h
+#if !defined(hive_DXGIFactory1Proxy_h) && (defined(SUPPORT_D3D11)) 
 #define hive_DXGIFactory1Proxy_h
 
 //-----------------------------------------------------------------------------
