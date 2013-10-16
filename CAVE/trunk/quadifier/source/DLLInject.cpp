@@ -176,7 +176,7 @@ bool hive::injectDLL( DWORD processId, const std::string & pathName )
 			GetProcAddress( kernel32, "GetLastError" ) );
 		if ( data.GetLastError == 0 ) break;
 
-		// obtain function pointer to GetLastError and store in data
+		// obtain function pointer to ExitThread and store in data
 		data.ExitThread = reinterpret_cast<PFNExitThread>(
 			GetProcAddress( kernel32, "ExitThread" ) );
 		if ( data.ExitThread == 0 ) break;
