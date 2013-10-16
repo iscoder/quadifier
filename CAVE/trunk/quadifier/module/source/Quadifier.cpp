@@ -663,11 +663,14 @@ unsigned __stdcall Quadifier::threadFunc( void *context )
     // set depth and stencil attributes
     attributes[WGL_DEPTH_BITS_ARB] = 0;
     attributes[WGL_STENCIL_BITS_ARB] = 0;
+
+    // number of desired anti-alias samples to match DirectX
+    int desiredSamples = static_cast<int>(self->m_samplesDX);
     
     // request the same number of multisamples as DirectX
-    if ( self->m_samplesDX > 0 ) {
+    if ( desiredSamples > 0 ) {
         attributes[WGL_SAMPLE_BUFFERS_ARB] = GL_TRUE;
-        attributes[WGL_SAMPLES_ARB] = static_cast<int>(self->m_samplesDX);
+        attributes[WGL_SAMPLES_ARB] = desiredSamples;
     }
     
     // create our OpenGL window
@@ -688,6 +691,16 @@ unsigned __stdcall Quadifier::threadFunc( void *context )
 		_endthreadex( 0 );
 		return 0;
 	}
+
+    // did we get the requested number of anti-alias samples?
+    if ( self->m_window.getSamples() != desiredSamples ) {
+        // warn the user in this case: this can result in failure when
+        // the anti-aliasing in DirectX is higher than the GL context
+        Log::print( "warning: unable to create OpenGL window with " )
+            << desiredSamples << "x anti-alias samples\n"
+            << "This may cause wglDXRegisterObjectNV to fail.\n"
+            << "Please check if anti-aliasing is forced off in the driver settings.\n";
+    }
 
 	// should we use stereo?
 	bool useStereo = self->m_stereoAvailable;
@@ -856,7 +869,7 @@ void Quadifier::createResources()
 
 			// fall back to GetViewport to get viewport dimensions
 			D3DVIEWPORT9 viewport = {};
-			m_device->GetViewport( &viewport );			
+			m_device->GetViewport( &viewport );
 
 			// store viewport width and height
 			m_width  = viewport.Width;
