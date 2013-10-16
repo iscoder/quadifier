@@ -6,6 +6,7 @@
 #include "DebugUtil.h"
 #include "IDirect3DDevice9Proxy.h"
 #include <GL/glext.h>
+#include "WinMessage.h"
 
 using namespace hive;
 using namespace std;
@@ -601,6 +602,11 @@ LRESULT CALLBACK WindowProcSource(
 	WNDPROC oldWindowProc = reinterpret_cast<WNDPROC>(
 		GetWindowLongPtr( hWnd, GWLP_USERDATA )
 	);
+
+    //// log windows messages
+    //Log::print()
+    //    << "SRC " << windowsMessageToString( uMsg )
+    //    << ',' << hex << wParam << ',' << lParam << dec << endl;
 
 	switch (uMsg) {
 	case WM_ERASEBKGND:
