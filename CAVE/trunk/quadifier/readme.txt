@@ -38,7 +38,7 @@ Most of the work is carried out by the Quadifier class. It causes Direct3D
 to render into a render target instead of the screen. The corresponding
 surface is mapped onto an OpenGL texture or renderbuffer using the NVIDIA
 NV_DX_interop extension. This is attached to a framebuffer object. The
-framebuffer object is blitted to the back left or back left OpenGL render
+framebuffer object is blitted to the back left or back right OpenGL render
 buffers as appropriate.
 
 The OpenGL renderer creates a separate window, with the same multisample
@@ -72,16 +72,15 @@ required, and it's easy to trip up on the reference counting.
 
 Current status
 --------------
-This works on 3 of my PCs, but doesn't work on the CUBE. It fails on
-wglDXRegisterObjectNV which returns a generic "open failed" error code,
-so hard to diagnose the cause currently.
+This currently (R359) works on Windows 7 and Windows XP, having been tested
+on about 5 different PCs to date. The following issues have been noticed:
 
-Suspect it could be one of the following:
-* Mismatched depth/stencil formats between Direct3D and OpenGL
-* Incomplete or inappropriate framebuffer attachments
-* Mismatched internal framebuffer format between Direct3D and OpenGL
-* Incompatibility with mosaic, SLI, QuadroPlex 7000, massive resolutions...
-* Possible driver bug
+* Fullscreen unlikely to work (black window) - theory: may be impossible to
+create GL window as a child of fullscreen D3D window?
+
+* Only works on the CUBE if the mosaic is the primary monitor, and the
+window must be wholly on the CUBE (otherwise stereo does not display)
 
 James
-11/09/13
+16/10/13
+
