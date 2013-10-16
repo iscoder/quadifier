@@ -52,6 +52,8 @@ typedef FARPROC (WINAPI *PFNGetProcAddress)( HMODULE hModule, LPCSTR lpProcName 
 
 typedef IDirect3D9 * (WINAPI *PFNDirect3DCreate9)( UINT SDKVersion );
 
+typedef HRESULT (WINAPI *PFNDirect3DCreate9Ex)( UINT SDKVersion, IDirect3D9Ex **ppD3D );
+
 typedef HRESULT (WINAPI *PFNCreateDXGIFactory)(REFIID riid, void **ppFactory);
 
 typedef HRESULT (WINAPI *PFNCreateDXGIFactory1)(REFIID riid, void **ppFactory);
@@ -131,12 +133,25 @@ IDirect3D9 * WINAPI fake_Direct3DCreate9( UINT SDKVersion )
 
 	IDirect3D9 *direct3D9 = 0;
 
+    // the IDirect3D9Ex interface is only required for NV_DX_Interop
+    // on Windows Vista upwards, where WDDM is used (this is configured
+    // in the Settings class)
 	if ( Settings::get().forceDirect3D9Ex ) {
+        // attempt to load the Direct3DCreate9Ex function: will fail on XP 32
+        // (but we shouldn't be in this branch on XP)
+        PFNDirect3DCreate9Ex direct3DCreate9Ex =
+            reinterpret_cast<PFNDirect3DCreate9Ex>(
+                GetProcAddress( GetModuleHandle(L"d3d9"), "Direct3DCreate9Ex")
+            );
+
+        // if we failed to get the Direct3DCreate9Ex function, bail out now
+        if ( direct3DCreate9Ex == 0 ) return 0;
+
 		IDirect3D9Ex *direct3D9Ex = 0;
 
 		// create a IDirect3D9Ex instance (instead of the requested
 		// IDirect3D9 instance)
-		HRESULT result = Direct3DCreate9Ex(
+		HRESULT result = direct3DCreate9Ex(
 			D3D_SDK_VERSION,
 			&direct3D9Ex
 		);
