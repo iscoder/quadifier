@@ -474,6 +474,16 @@ HRESULT IDirect3DDevice9Proxy::CreateRenderTarget(
 	IDirect3DSurface9 **ppSurface,
 	HANDLE *pSharedHandle
 ) {
+    //Log::print() << "CreateRenderTarget("
+    //    << Width << ','
+    //    << Height << ','
+    //    << Format << "=(" << D3DFORMATtoString( Format ) << "),"
+    //    << MultiSample << "=(" << D3DMULTISAMPLE_TYPEtoString( MultiSample ) <<"),"
+    //    << MultisampleQuality << ','
+    //    << Lockable << ','
+    //    << ppSurface << ','
+    //    << pSharedHandle << ")\n";
+
 	return m_device->CreateRenderTarget(
 		Width, Height,
 		Format,
@@ -589,6 +599,14 @@ HRESULT IDirect3DDevice9Proxy::CreateOffscreenPlainSurface(
 	IDirect3DSurface9 **ppSurface,
 	HANDLE *pSharedHandle
 ) {
+    //Log::print() << "CreateOffscreenPlainSurface("
+    //    << Width << ','
+    //    << Height << ','
+    //    << Format << "=(" << D3DFORMATtoString( Format ) << "),"
+    //    << Pool << "=(" << D3DPOOLtoString( Pool ) << "),"
+    //    << ppSurface << ','
+    //    << pSharedHandle << ")\n";
+
 	if ( Settings::get().forceDirect3D9Ex && (Pool == D3DPOOL_MANAGED) )
 		Pool = D3DPOOL_DEFAULT;
 
@@ -705,6 +723,14 @@ HRESULT IDirect3DDevice9Proxy::MultiplyTransform(
 
 HRESULT IDirect3DDevice9Proxy::SetViewport( CONST D3DVIEWPORT9 *pViewport )
 {
+    //Log::print() << "SetViewport: "
+    //    << pViewport->X << ','
+    //    << pViewport->Y << ' '
+    //    << pViewport->Width  << 'x'
+    //    << pViewport->Height << ' '
+    //    << pViewport->MinZ << '..'
+    //    << pViewport->MaxZ << endl;
+
 	return m_device->SetViewport( pViewport );
 }
 
