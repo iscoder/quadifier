@@ -72,7 +72,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>..\extern\mhook-2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;MODULE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -82,6 +82,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;d3d11.lib;opengl32.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -117,6 +118,7 @@
     <ClCompile Include="..\extern\mhook-2.3\disasm-lib\misc.c" />
     <ClCompile Include="source\Settings.cpp" />
     <ClCompile Include="source\StereoUtil.cpp" />
+    <ClCompile Include="source\WinMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CriticalSection.h" />
@@ -143,6 +145,7 @@
     <ClInclude Include="..\extern\mhook-2.3\disasm-lib\misc.h" />
     <ClInclude Include="source\Settings.h" />
     <ClInclude Include="source\StereoUtil.h" />
+    <ClInclude Include="source\WinMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\readme.txt" />
