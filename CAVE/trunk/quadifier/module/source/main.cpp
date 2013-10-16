@@ -1,15 +1,20 @@
 #include <windows.h>
 #include <mhook-lib/mhook.h>
 #include <d3d9.h>
-#include <d3d10_1.h>
-#include <d3d10.h>
-#include <d3d11.h>
-#include <DXGI.h>
 #include "IDirect3D9Proxy.h"
-#include "ID3D11DeviceProxy.h"
-#include "ID3D11DeviceContextProxy.h"
-#include "DXGISwapChainProxy.h"
-#include "DXGIFactory1Proxy.h"
+
+#if defined(SUPPORT_D3D11)
+	// only include these files if configured to build in D3D11 support
+	//#include <d3d10_1.h>
+	//#include <d3d10.h>
+	#include <d3d11.h>
+	#include <DXGI.h>
+	#include "ID3D11DeviceProxy.h"
+	#include "ID3D11DeviceContextProxy.h"
+	#include "DXGISwapChainProxy.h"
+	#include "DXGIFactory1Proxy.h"
+#endif
+
 #include "Log.h"
 #include "Settings.h"
 #include <iostream>
@@ -67,16 +72,6 @@ PFNGetProcAddress real_GetProcAddress = reinterpret_cast<PFNGetProcAddress>(
 PFNDirect3DCreate9 real_Direct3DCreate9 = reinterpret_cast<PFNDirect3DCreate9>(
 	GetProcAddress( GetModuleHandle(L"d3d9"), "Direct3DCreate9" ) );
 
-PFN_D3D11_CREATE_DEVICE real_D3D11CreateDevice =
-	reinterpret_cast<PFN_D3D11_CREATE_DEVICE>(
-		GetProcAddress( GetModuleHandle(L"d3d11"), "D3D11CreateDevice" )
-	);
-
-PFN_D3D11_CREATE_DEVICE_AND_SWAP_CHAIN real_D3D11CreateDeviceAndSwapChain = 
-	reinterpret_cast<PFN_D3D11_CREATE_DEVICE_AND_SWAP_CHAIN>(
-		GetProcAddress( GetModuleHandle(L"d3d11"), "D3D11CreateDeviceAndSwapChain" )
-	);
-
 PFNCreateDXGIFactory real_CreateDXGIFactory =
 	reinterpret_cast<PFNCreateDXGIFactory>(
 		GetProcAddress( GetModuleHandle(L"dxgi"), "CreateDXGIFactory" )
@@ -94,9 +89,24 @@ PFNChangeDisplaySettingsEx real_ChangeDisplaySettingsEx =
 
 //-----------------------------------------------------------------------------
 
+#if defined(SUPPORT_D3D11)
+PFN_D3D11_CREATE_DEVICE real_D3D11CreateDevice =
+	reinterpret_cast<PFN_D3D11_CREATE_DEVICE>(
+		GetProcAddress( GetModuleHandle(L"d3d11"), "D3D11CreateDevice" )
+	);
+
+PFN_D3D11_CREATE_DEVICE_AND_SWAP_CHAIN real_D3D11CreateDeviceAndSwapChain = 
+	reinterpret_cast<PFN_D3D11_CREATE_DEVICE_AND_SWAP_CHAIN>(
+		GetProcAddress( GetModuleHandle(L"d3d11"), "D3D11CreateDeviceAndSwapChain" )
+	);
+#endif //SUPPORT_D3D11
+
+//-----------------------------------------------------------------------------
+
 // force dependency on D3D9 in order that the D3D9.dll is loaded
 static DWORD status = D3DPERF_GetStatus();
 
+#if defined(SUPPORT_D3D11)
 // force dependency on D3D11 in order that the D3D11.dll is loaded
 static struct LoadD3D11 {
 	LoadD3D11() {
@@ -111,6 +121,7 @@ static struct LoadD3D11 {
             device->Release();
 	}
 } loadD3D11;
+#endif //SUPPORT_D3D11
 
 //-----------------------------------------------------------------------------
 
@@ -145,6 +156,7 @@ IDirect3D9 * WINAPI fake_Direct3DCreate9( UINT SDKVersion )
 
 //-----------------------------------------------------------------------------
 
+#if defined(SUPPORT_D3D11)
 HRESULT WINAPI fake_D3D11CreateDevice(
     __in_opt IDXGIAdapter* pAdapter,
     D3D_DRIVER_TYPE DriverType,
@@ -189,9 +201,11 @@ HRESULT WINAPI fake_D3D11CreateDevice(
 
 	return result;
 }
+#endif //SUPPORT_D3D11
 
 //-----------------------------------------------------------------------------
 
+#if defined(SUPPORT_D3D11)
 HRESULT WINAPI fake_D3D11CreateDeviceAndSwapChain(
   _In_   IDXGIAdapter *pAdapter,
   _In_   D3D_DRIVER_TYPE DriverType,
@@ -232,17 +246,21 @@ HRESULT WINAPI fake_D3D11CreateDeviceAndSwapChain(
 
 	return result;
 }
+#endif //SUPPORT_D3D11
 
 //-----------------------------------------------------------------------------
 
+#if defined(SUPPORT_D3D11)
 HRESULT WINAPI fake_CreateDXGIFactory( REFIID riid, void **ppFactory )
 {
 	Log::print() << "CreateDXGIFactory\n";
 	return real_CreateDXGIFactory( riid, ppFactory );
 }
+#endif //SUPPORT_D3D11
 
 //-----------------------------------------------------------------------------
 
+#if defined(SUPPORT_D3D11)
 HRESULT WINAPI fake_CreateDXGIFactory1( REFIID riid, void **ppFactory )
 {
 	Log::print() << "CreateDXGIFactory1\n";
@@ -269,6 +287,7 @@ HRESULT WINAPI fake_CreateDXGIFactory1( REFIID riid, void **ppFactory )
 
 	return result;
 }
+#endif //SUPPORT_D3D11
 
 //-----------------------------------------------------------------------------
 
@@ -332,33 +351,37 @@ void processAttach()
 	)
 		MessageBox( 0, L"Failed to hook Direct3DCreate9", L"Error", MB_OK );
 
+	// Begin D3D11 hooking ----------------------------------------------------
+	#if defined(SUPPORT_D3D11)
 	// hook D3D11CreateDevice
 	if ( (real_D3D11CreateDevice == 0) ||
-		 !Mhook_SetHook( reinterpret_cast<PVOID*>(&real_D3D11CreateDevice),
+			!Mhook_SetHook( reinterpret_cast<PVOID*>(&real_D3D11CreateDevice),
 			fake_D3D11CreateDevice )
 	)
 		MessageBox( 0, L"Failed to hook D3D11CreateDevice", L"Error", MB_OK );
 
 	// hook D3D11CreateDeviceAndSwapChain
 	if ( (real_D3D11CreateDeviceAndSwapChain == 0) ||
-		 !Mhook_SetHook( reinterpret_cast<PVOID*>(&real_D3D11CreateDeviceAndSwapChain),
+			!Mhook_SetHook( reinterpret_cast<PVOID*>(&real_D3D11CreateDeviceAndSwapChain),
 			fake_D3D11CreateDeviceAndSwapChain )
 	)
 		MessageBox( 0, L"Failed to hook D3D11CreateDeviceAndSwapChain", L"Error", MB_OK );
 
 	// hook CreateDXGIFactory
 	if ( (real_CreateDXGIFactory == 0) ||
-		 !Mhook_SetHook( reinterpret_cast<PVOID*>(&real_CreateDXGIFactory),
+			!Mhook_SetHook( reinterpret_cast<PVOID*>(&real_CreateDXGIFactory),
 			fake_CreateDXGIFactory )
 	)
 		MessageBox( 0, L"Failed to hook CreateDXGIFactory", L"Error", MB_OK );
 
 	// hook CreateDXGIFactory1
 	if ( (real_CreateDXGIFactory1 == 0) ||
-		 !Mhook_SetHook( reinterpret_cast<PVOID*>(&real_CreateDXGIFactory1),
+			!Mhook_SetHook( reinterpret_cast<PVOID*>(&real_CreateDXGIFactory1),
 			fake_CreateDXGIFactory1 )
 	)
 		MessageBox( 0, L"Failed to hook CreateDXGIFactory1", L"Error", MB_OK );
+	#endif //SUPPORT_D3D11
+	// End D3D11 hooking ------------------------------------------------------
 
     // hook ChangeDisplaySettingsEx
   	if ( (real_ChangeDisplaySettingsEx == 0) ||
@@ -383,8 +406,12 @@ void processDetach() {
 	Mhook_Unhook( reinterpret_cast<PVOID*>(&real_GetProcAddress)  );
     Mhook_Unhook( reinterpret_cast<PVOID*>(&real_ChangeDisplaySettingsEx) );
 	Mhook_Unhook( reinterpret_cast<PVOID*>(&real_Direct3DCreate9) );
+
+	#if defined(SUPPORT_D3D11)
 	Mhook_Unhook( reinterpret_cast<PVOID*>(&real_D3D11CreateDevice) );
 	Mhook_Unhook( reinterpret_cast<PVOID*>(&real_D3D11CreateDeviceAndSwapChain) );
+	#endif
+
 	Mhook_Unhook( reinterpret_cast<PVOID*>(&real_CreateDXGIFactory) );
 	Mhook_Unhook( reinterpret_cast<PVOID*>(&real_CreateDXGIFactory1) );
 }
