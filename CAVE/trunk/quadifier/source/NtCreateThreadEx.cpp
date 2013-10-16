@@ -48,7 +48,7 @@ typedef NTSTATUS (WINAPI *LPFN_NtCreateThreadEx)
 
 //-----------------------------------------------------------------------------
 
-NTSTATUS NtCreateThreadEx(
+NTSTATUS hive::NtCreateThreadEx(
 	OUT PHANDLE					hThread,
 	IN  ACCESS_MASK				DesiredAccess,
 	IN  POBJECT_ATTRIBUTES		ObjectAttributes,
@@ -108,7 +108,7 @@ NTSTATUS NtCreateThreadEx(
 
 //-----------------------------------------------------------------------------
 
-HANDLE SimpleNtCreateThreadEx(
+HANDLE hive::SimpleNtCreateThreadEx(
 	HANDLE hProcess,
 	LPTHREAD_START_ROUTINE lpStartAddress,
 	LPVOID lpParameter

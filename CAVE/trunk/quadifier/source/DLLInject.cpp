@@ -81,7 +81,8 @@ struct Data {
 	PFNExitThread			ExitThread;
 	PFNRtlExitUserThread	RtlExitUserThread;
 	PFNGetLastError			GetLastError;
-	char					pathName[_MAX_PATH];	/// DLL path name
+    void                   *threadExitFunc;         ///< Thread exit function
+	char					pathName[_MAX_PATH];	///< DLL path name
 } data;
 
 /**
@@ -104,8 +105,7 @@ static __declspec(naked) DWORD WINAPI codeBegin( LPVOID /*param*/ ) {
 		call [ebx + Data::GetLastError]
 		done:
 		push eax
-		//call [ebx + Data::RtlExitUserThread]	// for RtlCreateUserThread
-		call [ebx + Data::ExitThread]			// for CreateRemoteThread
+        call [ebx + Data::threadExitFunc]       // call thread exit function
 		pop ebx
 		ret 4
 	}
@@ -236,46 +236,94 @@ bool hive::injectDLL( DWORD processId, const std::string & pathName )
 		);
 		if ( numWritten != codeSize ) break;
 
-		// copy data into the target process (the function pointers
-		// and DLL path name)
+        // calculate address where data should be written in the remote process
+        // (it's located immediately after the code)
+        // the data consists of function pointers and the DLL path name
 		LPVOID dataAddress = reinterpret_cast<char*>(memory) + codeSize;
-		WriteProcessMemory(
-			process, dataAddress,
-			&data, dataSize,
-			&numWritten
-		);
-		if ( numWritten != dataSize ) break;
 
-		// create remote thread and execute code inside target process
+        /// helper class used to write data into the remote process
+        struct Writer {
+            /// constructor initialises the process, address and data pointers
+            Writer(
+                HANDLE process, LPVOID baseAddress, LPCVOID buffer, SIZE_T size
+            ) :
+                m_process( process ),
+                m_baseAddress( baseAddress ),
+                m_buffer( buffer ),
+                m_size( size )
+            {
+            }
+
+            /// writes the current data structure into process memory,
+            /// returning true for success, false in case of failure
+            bool writeProcessMemory() {
+                SIZE_T numWritten = 0;
+                WriteProcessMemory(
+                    m_process, m_baseAddress,
+                    m_buffer, m_size,
+                    &numWritten
+                );
+                return ( numWritten == m_size );
+            }
+        
+        private:
+            HANDLE  m_process;      ///< process handle
+            LPVOID  m_baseAddress;  ///< base address to write
+            LPCVOID m_buffer;       ///< data to be written
+            SIZE_T  m_size;         ///< size of data
+
+        } local(                    // initialisation
+            process, dataAddress,
+            &data, dataSize
+        );
+
+        // We will try three different methods to create our thread inside the
+        // remote process:
+        // - CreateRemoteThread
+        // - NtCreateThreadEx (undocumented function)
+        // - RtlCreateUserThread (undocumented function)
+
+        // CreateRemoteThread
+        // -install the appropriate thread exit function
+        data.threadExitFunc = data.ExitThread;
+        if ( !local.writeProcessMemory() ) break;
+		// -create remote thread and execute code inside target process
 		thread = CreateRemoteThread(
 			process, 0, 0,
 			reinterpret_cast<LPTHREAD_START_ROUTINE>(codeAddress),
 			reinterpret_cast<LPVOID>(dataAddress),
 			0, 0
 		);
-		if ( thread == 0 ) break;
 
-		// possible alternative for Windows Vista and Windows 7
-		//thread = SimpleNtCreateThreadEx(
-		//	process,
-		//	(LPTHREAD_START_ROUTINE)codeAddress,
-		//	dataAddress
-		//);
-		//if ( thread == 0 ) break;
-
-		// create remote thread and execute code inside target process,
-		// this avoids using CreateRemoteThread which apparently doesn't
-		// work on Windows 7 due to session separation
-        // edit: in fact CreateRemoteThread works fine for me on Windows 7
-        // so it seems internet wisdom may be wrong (or outdated)
-		//NTSTATUS threadStatus = RtlCreateUserThread(
-		//	process, NULL, 0, 0, 0, 0,
-		//	codeAddress,		// address of code
-		//	dataAddress,		// address of data
-		//	&thread,
-		//	NULL
-		//);
-		//if ( threadStatus != 0 ) break;
+		if ( thread == 0 ) {
+            // NtCreateThreadEx
+            // -install the appropriate thread exit function
+            data.threadExitFunc = data.RtlExitUserThread;
+            if ( !local.writeProcessMemory() ) break;
+            // -create remote thread and execute code inside target process
+		    thread = SimpleNtCreateThreadEx(
+		    	process,
+		    	(LPTHREAD_START_ROUTINE)codeAddress,
+		    	dataAddress
+		    );
+        }
+		
+        if ( thread == 0 ) {
+            // RtlCreateUserThread
+            // -install the appropriate thread exit function
+            data.threadExitFunc = data.RtlExitUserThread;
+            if ( !local.writeProcessMemory() ) break;
+		    // -create remote thread and execute code inside target process,
+		    NTSTATUS threadStatus = RtlCreateUserThread(
+		    	process, NULL, 0, 0, 0, 0,
+		    	codeAddress,		// address of code
+		    	dataAddress,		// address of data
+		    	&thread,
+		    	NULL
+		    );
+            // exit in case of failure
+		    if ( threadStatus != 0 ) break;
+        }
 
 		// wait for thread to terminate
 		WaitForSingleObject( thread, INFINITE );
