@@ -161,7 +161,11 @@ bool hive::injectDLL( DWORD processId, const std::string & pathName )
 
 		// open the target process so that we can inject the DLL
 		process = OpenProcess(
-			PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION,
+			PROCESS_CREATE_THREAD	|
+			PROCESS_VM_OPERATION	|
+			PROCESS_VM_READ			|
+			PROCESS_VM_WRITE		|
+			PROCESS_QUERY_INFORMATION,
 			FALSE, processId
 		);
 		if ( process == 0 ) break;
