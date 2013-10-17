@@ -277,6 +277,13 @@ bool hive::injectDLL( DWORD processId, const std::string & pathName )
             &data, dataSize
         );
 
+		// initialise OS version info structure
+		OSVERSIONINFO info = {};
+		info.dwOSVersionInfoSize = sizeof(info);
+
+		// are we on Windows Vista or above?
+		bool vistaUp = GetVersionEx(&info) && (info.dwMajorVersion >= 6);
+
         // We will try three different methods to create our thread inside the
         // remote process:
         // - CreateRemoteThread
@@ -295,7 +302,7 @@ bool hive::injectDLL( DWORD processId, const std::string & pathName )
 			0, 0
 		);
 
-		if ( thread == 0 ) {
+		if ( ( thread == 0 ) && vistaUp ) {
             // NtCreateThreadEx
             // -install the appropriate thread exit function
             data.threadExitFunc = data.RtlExitUserThread;
@@ -308,7 +315,7 @@ bool hive::injectDLL( DWORD processId, const std::string & pathName )
 		    );
         }
 		
-        if ( thread == 0 ) {
+        if ( ( thread == 0 ) && vistaUp ) {
             // RtlCreateUserThread
             // -install the appropriate thread exit function
             data.threadExitFunc = data.RtlExitUserThread;
