@@ -193,9 +193,22 @@ UINT IDirect3DDevice9Proxy::GetNumberOfSwapChains()
 //-----------------------------------------------------------------------------
 
 HRESULT IDirect3DDevice9Proxy::Reset(
-	D3DPRESENT_PARAMETERS *pPresentationParameters
+	D3DPRESENT_PARAMETERS *pPresentParam
 ) {
-	return m_device->Reset( pPresentationParameters );
+
+    Log::print("IDirect3DDevice9::Reset: ")
+        << pPresentParam->BackBufferWidth << 'x' << pPresentParam->BackBufferHeight << ','
+        << "backBuffers=" << pPresentParam->BackBufferCount << ','
+        << "windowed=" << pPresentParam->Windowed << endl;
+
+    if ( pPresentParam->Windowed == FALSE ) {
+        Log::print("Forcing windowed mode\n");
+        // enforce windowed mode
+        pPresentParam->Windowed = TRUE;
+        pPresentParam->FullScreen_RefreshRateInHz = 0;
+    }
+
+    return m_device->Reset( pPresentParam );
 }
 
 //-----------------------------------------------------------------------------
