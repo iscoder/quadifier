@@ -115,6 +115,50 @@ static __declspec(naked) DWORD WINAPI codeBegin( LPVOID /*param*/ ) {
 
 //-----------------------------------------------------------------------------
 
+/// Enable a requested privilege for the specified process. Returns true for
+/// success or false in case of failure.
+bool enablePrivilege( HANDLE process, LPCSTR privilege )
+{
+    // check input parameters
+    if ( (process == 0) || (privilege == 0) ) return false;
+
+    // open the process token
+    HANDLE token = 0;
+    if ( OpenProcessToken( process, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &token) == FALSE )
+        return false;
+
+    // look up the locally unique identifier for the given privilege name
+    LUID luid = {};
+    if ( LookupPrivilegeValue( 0, privilege, &luid ) == FALSE ) {
+        CloseHandle( token );
+        return false;
+    }
+    
+    // this structure defines the privilege (luid) to be enabled
+    TOKEN_PRIVILEGES newState = {};
+    newState.PrivilegeCount            = 1;
+    newState.Privileges[0].Luid        = luid;
+    newState.Privileges[0].Attributes  = SE_PRIVILEGE_ENABLED;
+     
+    // enable the privilege
+    bool result = ( AdjustTokenPrivileges(
+        token,              // token handle
+        FALSE,              // disable all priviliges?
+        &newState,          // new privilege state
+        sizeof(newState),   // size of new state
+        0,                  // previous state
+        0                   // return length
+    ) == TRUE );
+
+    // close the process token
+    CloseHandle( token );
+
+    // return true in case of success, false otherwise
+    return result;
+}//enablePrivilege
+
+//-----------------------------------------------------------------------------
+
 bool hive::injectDLL( DWORD processId, const std::string & pathName )
 {
 	HANDLE process = 0;
@@ -158,6 +202,10 @@ bool hive::injectDLL( DWORD processId, const std::string & pathName )
 		
 		// free the DLL
 		if ( dll != 0) FreeLibrary( dll );
+
+        // attempt to enable debug privilege
+        // we ignore the outcome, as the code below does not usually need this
+        enablePrivilege( GetCurrentProcess(), SE_DEBUG_NAME );
 
 		// open the target process so that we can inject the DLL
 		process = OpenProcess(
@@ -222,7 +270,7 @@ bool hive::injectDLL( DWORD processId, const std::string & pathName )
 
 		// allocate memory in target process
 		memory = VirtualAllocEx(
-			process,						// handle of the target process
+			process,					// handle of the target process
 			0,							// preferred address
 			memorySize,					// size of allocation in bytes
 			MEM_COMMIT | MEM_RESERVE,	// allocation type
