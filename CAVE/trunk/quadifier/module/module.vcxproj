@@ -94,21 +94,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\CriticalSection.cpp" />
-    <ClCompile Include="source\DebugUtil.cpp" />
+    <ClCompile Include="..\common\CriticalSection.cpp" />
+    <ClCompile Include="..\common\Event.cpp" />
+    <ClCompile Include="..\common\win32\DebugUtil.cpp" />
+    <ClCompile Include="..\common\win32\GLWindow.cpp" />
+    <ClCompile Include="..\common\win32\Log.cpp" />
+    <ClCompile Include="..\common\win32\StereoUtil.cpp" />
+    <ClCompile Include="..\common\win32\WinMessage.cpp" />
     <ClCompile Include="source\DXGIAdapterProxy.cpp" />
     <ClCompile Include="source\DXGIDeviceProxy.cpp" />
     <ClCompile Include="source\DXGIFactory1Proxy.cpp" />
     <ClCompile Include="source\DXGIFactoryProxy.cpp" />
     <ClCompile Include="source\DXGISwapChainProxy.cpp" />
-    <ClCompile Include="source\Event.cpp" />
     <ClCompile Include="source\Extensions.cpp" />
-    <ClCompile Include="source\GLWindow.cpp" />
     <ClCompile Include="source\ID3D11DeviceContextProxy.cpp" />
     <ClCompile Include="source\ID3D11DeviceProxy.cpp" />
     <ClCompile Include="source\IDirect3D9Proxy.cpp" />
     <ClCompile Include="source\IDirect3DDevice9Proxy.cpp" />
-    <ClCompile Include="source\Log.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\Quadifier.cpp" />
     <ClCompile Include="..\extern\mhook-2.3\disasm-lib\cpu.c" />
@@ -117,25 +119,24 @@
     <ClCompile Include="..\extern\mhook-2.3\mhook-lib\mhook.cpp" />
     <ClCompile Include="..\extern\mhook-2.3\disasm-lib\misc.c" />
     <ClCompile Include="source\Settings.cpp" />
-    <ClCompile Include="source\StereoUtil.cpp" />
-    <ClCompile Include="source\WinMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\CriticalSection.h" />
-    <ClInclude Include="source\DebugUtil.h" />
+    <ClInclude Include="..\common\CriticalSection.h" />
+    <ClInclude Include="..\common\Event.h" />
+    <ClInclude Include="..\common\win32\DebugUtil.h" />
+    <ClInclude Include="..\common\win32\GLWindow.h" />
+    <ClInclude Include="..\common\win32\Log.h" />
+    <ClInclude Include="..\common\win32\StereoUtil.h" />
     <ClInclude Include="source\DXGIAdapterProxy.h" />
     <ClInclude Include="source\DXGIDeviceProxy.h" />
     <ClInclude Include="source\DXGIFactory1Proxy.h" />
     <ClInclude Include="source\DXGIFactoryProxy.h" />
     <ClInclude Include="source\DXGISwapChainProxy.h" />
-    <ClInclude Include="source\Event.h" />
     <ClInclude Include="source\Extensions.h" />
-    <ClInclude Include="source\GLWindow.h" />
     <ClInclude Include="source\ID3D11DeviceContextProxy.h" />
     <ClInclude Include="source\ID3D11DeviceProxy.h" />
     <ClInclude Include="source\IDirect3D9Proxy.h" />
     <ClInclude Include="source\IDirect3DDevice9Proxy.h" />
-    <ClInclude Include="source\Log.h" />
     <ClInclude Include="source\Quadifier.h" />
     <ClInclude Include="..\extern\mhook-2.3\disasm-lib\cpu.h" />
     <ClInclude Include="..\extern\mhook-2.3\disasm-lib\disasm.h" />
@@ -144,7 +145,6 @@
     <ClInclude Include="..\extern\mhook-2.3\mhook-lib\mhook.h" />
     <ClInclude Include="..\extern\mhook-2.3\disasm-lib\misc.h" />
     <ClInclude Include="source\Settings.h" />
-    <ClInclude Include="source\StereoUtil.h" />
     <ClInclude Include="source\WinMessage.h" />
   </ItemGroup>
   <ItemGroup>

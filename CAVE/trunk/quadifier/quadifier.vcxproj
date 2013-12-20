@@ -90,13 +90,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\DLLInject.cpp" />
+    <ClCompile Include="common\win32\DLLInject.cpp" />
+    <ClCompile Include="common\win32\NtCreateThreadEx.cpp" />
     <ClCompile Include="source\main.cpp" />
-    <ClCompile Include="source\NtCreateThreadEx.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\DLLInject.h" />
-    <ClInclude Include="source\NtCreateThreadEx.h" />
+    <ClInclude Include="common\win32\DLLInject.h" />
+    <ClInclude Include="common\win32\NtCreateThreadEx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
