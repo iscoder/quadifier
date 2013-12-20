@@ -74,7 +74,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\extern\mhook-2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\extern\mhook-2.3;..\common;..\..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;MODULE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -94,13 +94,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\CriticalSection.cpp" />
-    <ClCompile Include="..\common\Event.cpp" />
-    <ClCompile Include="..\common\win32\DebugUtil.cpp" />
-    <ClCompile Include="..\common\win32\GLWindow.cpp" />
-    <ClCompile Include="..\common\win32\Log.cpp" />
-    <ClCompile Include="..\common\win32\StereoUtil.cpp" />
-    <ClCompile Include="..\common\win32\WinMessage.cpp" />
+    <ClCompile Include="..\..\common\CriticalSection.cpp" />
+    <ClCompile Include="..\..\common\Event.cpp" />
+    <ClCompile Include="..\common\DebugUtil.cpp" />
+    <ClCompile Include="..\common\GLWindow.cpp" />
+    <ClCompile Include="..\common\Log.cpp" />
+    <ClCompile Include="..\common\StereoUtil.cpp" />
+    <ClCompile Include="..\common\WinMessage.cpp" />
     <ClCompile Include="source\DXGIAdapterProxy.cpp" />
     <ClCompile Include="source\DXGIDeviceProxy.cpp" />
     <ClCompile Include="source\DXGIFactory1Proxy.cpp" />
@@ -121,12 +121,13 @@
     <ClCompile Include="source\Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\common\CriticalSection.h" />
-    <ClInclude Include="..\common\Event.h" />
-    <ClInclude Include="..\common\win32\DebugUtil.h" />
-    <ClInclude Include="..\common\win32\GLWindow.h" />
-    <ClInclude Include="..\common\win32\Log.h" />
-    <ClInclude Include="..\common\win32\StereoUtil.h" />
+    <ClInclude Include="..\..\common\CriticalSection.h" />
+    <ClInclude Include="..\..\common\Event.h" />
+    <ClInclude Include="..\..\common\win32\DebugUtil.h" />
+    <ClInclude Include="..\..\common\win32\GLWindow.h" />
+    <ClInclude Include="..\..\common\win32\Log.h" />
+    <ClInclude Include="..\..\common\win32\StereoUtil.h" />
+    <ClInclude Include="..\..\common\win32\WinMessage.h" />
     <ClInclude Include="source\DXGIAdapterProxy.h" />
     <ClInclude Include="source\DXGIDeviceProxy.h" />
     <ClInclude Include="source\DXGIFactory1Proxy.h" />
@@ -145,7 +146,6 @@
     <ClInclude Include="..\extern\mhook-2.3\mhook-lib\mhook.h" />
     <ClInclude Include="..\extern\mhook-2.3\disasm-lib\misc.h" />
     <ClInclude Include="source\Settings.h" />
-    <ClInclude Include="source\WinMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\readme.txt" />

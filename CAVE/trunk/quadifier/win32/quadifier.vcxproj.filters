@@ -4,10 +4,10 @@
     <ClCompile Include="source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="common\win32\DLLInject.cpp">
+    <ClCompile Include="common\DLLInject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="common\win32\NtCreateThreadEx.cpp">
+    <ClCompile Include="common\NtCreateThreadEx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -20,10 +20,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="common\win32\DLLInject.h">
+    <ClInclude Include="common\DLLInject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\win32\NtCreateThreadEx.h">
+    <ClInclude Include="common\NtCreateThreadEx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
