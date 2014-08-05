@@ -123,11 +123,11 @@
   <ItemGroup>
     <ClInclude Include="..\..\common\CriticalSection.h" />
     <ClInclude Include="..\..\common\Event.h" />
-    <ClInclude Include="..\..\common\win32\DebugUtil.h" />
-    <ClInclude Include="..\..\common\win32\GLWindow.h" />
-    <ClInclude Include="..\..\common\win32\Log.h" />
-    <ClInclude Include="..\..\common\win32\StereoUtil.h" />
-    <ClInclude Include="..\..\common\win32\WinMessage.h" />
+    <ClInclude Include="..\common\DebugUtil.h" />
+    <ClInclude Include="..\common\GLWindow.h" />
+    <ClInclude Include="..\common\Log.h" />
+    <ClInclude Include="..\common\StereoUtil.h" />
+    <ClInclude Include="..\common\WinMessage.h" />
     <ClInclude Include="source\DXGIAdapterProxy.h" />
     <ClInclude Include="source\DXGIDeviceProxy.h" />
     <ClInclude Include="source\DXGIFactory1Proxy.h" />

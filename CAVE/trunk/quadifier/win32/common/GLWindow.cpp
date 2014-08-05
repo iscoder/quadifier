@@ -331,9 +331,9 @@ HGLRC GLWindow::getHGLRC() const
 
 unsigned GLWindow::getSamples() const
 {
-	GLint samples = 0;
-	glGetIntegerv( GL_SAMPLES, &samples );
-	if ( samples < 0 ) samples = 0;
+    GLint samples = 0;
+    glGetIntegerv( GL_SAMPLES, &samples );
+    if ( samples < 0 ) samples = 0;
     return static_cast<unsigned>( samples );
 }
 

@@ -24,7 +24,7 @@
 //    1. The origin of this software must not be misrepresented; you must not
 //    claim that you wrote the original software.
 //
-//	  2. If you use this software in a product, an acknowledgment in the
+//    2. If you use this software in a product, an acknowledgment in the
 //    product documentation is required.
 //
 //    3. Altered source versions must be plainly marked as such, and must not
@@ -42,10 +42,10 @@ struct Event::Context {
 
 #elif defined(__linux__)
 
-	pthread_mutex_t mutex;		///< the mutex
-	pthread_cond_t condition;	///< condition variable to wait on
-	bool signalled;				///< is the event signalled?
-	unsigned waiting;			///< number of waiting threads
+    pthread_mutex_t mutex;      ///< the mutex
+    pthread_cond_t condition;   ///< condition variable to wait on
+    bool signalled;             ///< is the event signalled?
+    unsigned waiting;           ///< number of waiting threads
 
 #endif
 };
@@ -53,31 +53,31 @@ struct Event::Context {
 //-----------------------------------------------------------------------------
 
 Event::Event() :
-	self( new Event::Context )
+    self( new Event::Context )
 {
 #if defined(_WIN32)
 
-	// create an event object
-	self->eventHandle = CreateEvent(
-        NULL,	// default security attributes
-        FALSE,	// auto-reset event object
-        FALSE,	// initial state is not signalled
-		NULL	// object is not named
+    // create an event object
+    self->eventHandle = CreateEvent(
+        NULL,   // default security attributes
+        FALSE,  // auto-reset event object
+        FALSE,  // initial state is not signalled
+        NULL    // object is not named
     );
 
-	// ensure that event object was created successfully (in debug builds)
-	assert( self->eventHandle != 0 );
+    // ensure that event object was created successfully (in debug builds)
+    assert( self->eventHandle != 0 );
 
 #elif defined(__linux__)
 
-	self->signalled = false;
-	self->waiting	= 0;
-	
-	// initialise mutex
-	pthread_mutex_init( &self->mutex, 0 );
+    self->signalled = false;
+    self->waiting   = 0;
+    
+    // initialise mutex
+    pthread_mutex_init( &self->mutex, 0 );
 
-	// initialise condition variable
-	pthread_cond_init( &self->condition, 0 );
+    // initialise condition variable
+    pthread_cond_init( &self->condition, 0 );
 
 #endif
 }//Event
@@ -88,13 +88,13 @@ Event::~Event()
 {
 #if defined(_WIN32)
 
-	// destroy the event object
-	CloseHandle( self->eventHandle );
+    // destroy the event object
+    CloseHandle( self->eventHandle );
 
 #elif defined(__linux__)
 
-	pthread_mutex_destroy( &self->mutex );
-	pthread_cond_destroy( &self->condition );
+    pthread_mutex_destroy( &self->mutex );
+    pthread_cond_destroy( &self->condition );
 
 #endif
 }
@@ -105,24 +105,24 @@ void Event::signal()
 {
 #if defined(_WIN32)
 
-	// set the event to the signalled state
-	SetEvent( self->eventHandle );
+    // set the event to the signalled state
+    SetEvent( self->eventHandle );
 
 #elif defined(__linux__)
 
-	// lock the mutex first
-	pthread_mutex_lock( &self->mutex );
+    // lock the mutex first
+    pthread_mutex_lock( &self->mutex );
 
-	if ( self->waiting > 0 ) {
-		// threads waiting: wake up waiting thread
-		pthread_cond_signal( &self->condition );
-	} else {
-		// no threads waiting: signal the event
-		self->signalled = true;
-	}
+    if ( self->waiting > 0 ) {
+        // threads waiting: wake up waiting thread
+        pthread_cond_signal( &self->condition );
+    } else {
+        // no threads waiting: signal the event
+        self->signalled = true;
+    }
     
-	// release the mutex
-	pthread_mutex_unlock( &self->mutex );
+    // release the mutex
+    pthread_mutex_unlock( &self->mutex );
 
 #endif
 }
@@ -133,58 +133,58 @@ bool Event::wait( unsigned milliseconds )
 {
 #if defined(_WIN32)
 
-	// wait for the event to be signalled, return true if signalled,
-	// return false if the wait timed out or was abandoned
-	return ( WaitForSingleObject(
-		self->eventHandle,
-		static_cast<DWORD>( milliseconds )
-	) == WAIT_OBJECT_0 );
+    // wait for the event to be signalled, return true if signalled,
+    // return false if the wait timed out or was abandoned
+    return ( WaitForSingleObject(
+        self->eventHandle,
+        static_cast<DWORD>( milliseconds )
+    ) == WAIT_OBJECT_0 );
 
 #elif defined(__linux__)
 
-	// lock the mutex first
-	pthread_mutex_lock( &self->mutex );
+    // lock the mutex first
+    pthread_mutex_lock( &self->mutex );
 
-	// is the event signalled?
-	if ( self->signalled ) {
-		// automatically reset
-		self->signalled = false;
-	} else {
-		// not signalled
+    // is the event signalled?
+    if ( self->signalled ) {
+        // automatically reset
+        self->signalled = false;
+    } else {
+        // not signalled
 
-		// increment number of waiting threads
-		self->waiting++;
-		
-		// has a timeout been specified?
-		if ( milliseconds == 0 ) {
-			// no timeout specified: wait indefinitely
-			pthread_cond_wait( &self->condition, &self->mutex );
-		} else {
-			// timeout specified: we will use a timed wait
+        // increment number of waiting threads
+        self->waiting++;
+        
+        // has a timeout been specified?
+        if ( milliseconds == 0 ) {
+            // no timeout specified: wait indefinitely
+            pthread_cond_wait( &self->condition, &self->mutex );
+        } else {
+            // timeout specified: we will use a timed wait
 
-			// get current time, to calculate absolute expiry time
-			struct timespec expiry;
-			clock_gettime( CLOCK_REALTIME, &expiry );
-			
-			// increment nanoseconds by user specified timeout
-			expiry.tv_nsec += 1000L * static_cast<long>( milliseconds );
+            // get current time, to calculate absolute expiry time
+            struct timespec expiry;
+            clock_gettime( CLOCK_REALTIME, &expiry );
+            
+            // increment nanoseconds by user specified timeout
+            expiry.tv_nsec += 1000L * static_cast<long>( milliseconds );
 
-			// carry into seconds
-			if ( expiry.tv_nsec >= 1000000000 ) {
-				expiry.tv_nsec -= 1000000000;
-				expiry.tv_sec++;
-			}
+            // carry into seconds
+            if ( expiry.tv_nsec >= 1000000000 ) {
+                expiry.tv_nsec -= 1000000000;
+                expiry.tv_sec++;
+            }
 
-			// wait with timeout
-			pthread_cond_timedwait( &self->condition, &self->mutex, &expiry );
-		}
+            // wait with timeout
+            pthread_cond_timedwait( &self->condition, &self->mutex, &expiry );
+        }
 
-		// decrement number of waiting threads
-		self->waiting--;
-	}
+        // decrement number of waiting threads
+        self->waiting--;
+    }
     
-	// release the mutex
-	pthread_mutex_unlock( &self->mutex );
+    // release the mutex
+    pthread_mutex_unlock( &self->mutex );
 
 #endif
 }//wait

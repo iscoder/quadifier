@@ -16,7 +16,7 @@
 //    1. The origin of this software must not be misrepresented; you must not
 //    claim that you wrote the original software.
 //
-//	  2. If you use this software in a product, an acknowledgment in the
+//    2. If you use this software in a product, an acknowledgment in the
 //    product documentation is required.
 //
 //    3. Altered source versions must be plainly marked as such, and must not
@@ -29,27 +29,27 @@
 
 const Settings & Settings::get()
 {
-	static Settings settings;
-	return settings;
+    static Settings settings;
+    return settings;
 }
 
 //-----------------------------------------------------------------------------
 
 Settings::Settings() :
-	passThrough( false ),
+    passThrough( false ),
     forceDirect3D9Ex( false ),
     useTexture( false ),
     preventModeChange( true )
 {
-	// initialise OS version info structure
-	OSVERSIONINFO info = {};
-	info.dwOSVersionInfoSize = sizeof(info);
+    // initialise OS version info structure
+    OSVERSIONINFO info = {};
+    info.dwOSVersionInfoSize = sizeof(info);
 
-	// are we on Windows Vista or higher?
-	bool vistaUp = GetVersionEx(&info) && (info.dwMajorVersion >= 6);
+    // are we on Windows Vista or higher?
+    bool vistaUp = GetVersionEx(&info) && (info.dwMajorVersion >= 6);
 
-	// force use of Direct3D9Ex on Vista upwards
-	forceDirect3D9Ex = vistaUp;
+    // force use of Direct3D9Ex on Vista upwards
+    forceDirect3D9Ex = vistaUp;
 }
 
 //-----------------------------------------------------------------------------

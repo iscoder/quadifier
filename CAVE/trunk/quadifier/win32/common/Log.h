@@ -16,7 +16,7 @@
 //    1. The origin of this software must not be misrepresented; you must not
 //    claim that you wrote the original software.
 //
-//	  2. If you use this software in a product, an acknowledgment in the
+//    2. If you use this software in a product, an acknowledgment in the
 //    product documentation is required.
 //
 //    3. Altered source versions must be plainly marked as such, and must not
@@ -39,29 +39,29 @@ namespace hive {
  */
 class Log {
 public:
-	/// Virtual Destructor
-	virtual ~Log();
+    /// Virtual Destructor
+    virtual ~Log();
 
-	/// Provides access to the single instance
-	static Log & get();
+    /// Provides access to the single instance
+    static Log & get();
 
-	/// Open the specified log file for output
-	static bool open( const std::string & fileName = "log.txt" );
+    /// Open the specified log file for output
+    static bool open( const std::string & fileName = "log.txt" );
 
-	/// Close the log file
-	static void close();
+    /// Close the log file
+    static void close();
 
-	/// Print a message to the log
-	static std::ostream & print( const std::string & text = "" );
+    /// Print a message to the log
+    static std::ostream & print( const std::string & text = "" );
 
-	/// Provides access to the log output stream
-	static std::ostream & out();
+    /// Provides access to the log output stream
+    static std::ostream & out();
 
 private:
-	/// Default Constructor
-	Log();
+    /// Default Constructor
+    Log();
 
-	std::ofstream m_stream;	///< the log output stream
+    std::ofstream m_stream; ///< the log output stream
 };
 
 } // namespace hive

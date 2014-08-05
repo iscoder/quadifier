@@ -16,7 +16,7 @@
 //    1. The origin of this software must not be misrepresented; you must not
 //    claim that you wrote the original software.
 //
-//	  2. If you use this software in a product, an acknowledgment in the
+//    2. If you use this software in a product, an acknowledgment in the
 //    product documentation is required.
 //
 //    3. Altered source versions must be plainly marked as such, and must not
@@ -28,16 +28,16 @@
 //-----------------------------------------------------------------------------
 
 struct Settings {
-	bool passThrough;		///< Enable "pass through" mode
-	bool forceDirect3D9Ex;	///< Force Direct3D9 applications to use Direct3D9Ex
+    bool passThrough;       ///< Enable "pass through" mode
+    bool forceDirect3D9Ex;  ///< Force Direct3D9 applications to use Direct3D9Ex
     bool useTexture;        ///< Use textures (true) or renderbuffers (false)
     bool preventModeChange; ///< Prevent application from changing display mode
 
-	/// Returns the current settings
-	static const Settings & get();
+    /// Returns the current settings
+    static const Settings & get();
 
 private:
-	Settings();
+    Settings();
 };
 
 //-----------------------------------------------------------------------------
