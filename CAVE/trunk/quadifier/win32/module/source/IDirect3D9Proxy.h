@@ -16,7 +16,7 @@
 //    1. The origin of this software must not be misrepresented; you must not
 //    claim that you wrote the original software.
 //
-//	  2. If you use this software in a product, an acknowledgment in the
+//    2. If you use this software in a product, an acknowledgment in the
 //    product documentation is required.
 //
 //    3. Altered source versions must be plainly marked as such, and must not
@@ -36,17 +36,17 @@
  */
 class IDirect3D9Proxy: public IDirect3D9 {
 public:
-	IDirect3D9Proxy( LPDIRECT3D9 direct3D );
+    IDirect3D9Proxy( LPDIRECT3D9 direct3D );
 
-	virtual ~IDirect3D9Proxy();
+    virtual ~IDirect3D9Proxy();
 
-	//--- IUnknown methods ----------------------------------------------------
-	
+    //--- IUnknown methods ----------------------------------------------------
+    
     STDMETHOD(QueryInterface)(THIS_ REFIID riid, void** ppvObj);
     STDMETHOD_(ULONG,AddRef)(THIS);
     STDMETHOD_(ULONG,Release)(THIS);
 
-	//--- IDirect3D9 methods --------------------------------------------------
+    //--- IDirect3D9 methods --------------------------------------------------
     
     STDMETHOD(RegisterSoftwareDevice)(THIS_ void* pInitializeFunction);
     STDMETHOD_(UINT, GetAdapterCount)(THIS);
@@ -64,7 +64,7 @@ public:
     STDMETHOD(CreateDevice)(THIS_ UINT Adapter,D3DDEVTYPE DeviceType,HWND hFocusWindow,DWORD BehaviorFlags,D3DPRESENT_PARAMETERS* pPresentationParameters,IDirect3DDevice9** ppReturnedDeviceInterface);
 
 private:
-	IDirect3D9 *m_parent;
+    IDirect3D9 *m_parent;
 };
 
 //-----------------------------------------------------------------------------

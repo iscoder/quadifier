@@ -33,69 +33,69 @@
 
 struct DXGIFactoryProxy : public IDXGIFactory {
 public:
-	DXGIFactoryProxy( IDXGIFactory *factory );
+    DXGIFactoryProxy( IDXGIFactory *factory );
 
-	//--- IUnknown methods ----------------------------------------------------
-	
-	STDMETHOD(QueryInterface)(THIS_ REFIID riid, void** ppvObj);
+    //--- IUnknown methods ----------------------------------------------------
+    
+    STDMETHOD(QueryInterface)(THIS_ REFIID riid, void** ppvObj);
 
-	STDMETHOD_(ULONG,AddRef)(THIS);
+    STDMETHOD_(ULONG,AddRef)(THIS);
 
-	STDMETHOD_(ULONG,Release)(THIS);
+    STDMETHOD_(ULONG,Release)(THIS);
 
-	//--- IDXGIFactory methods ------------------------------------------------
+    //--- IDXGIFactory methods ------------------------------------------------
 
-	virtual HRESULT STDMETHODCALLTYPE EnumAdapters(
-		UINT Adapter,
-		__out IDXGIAdapter **ppAdapter
-	);
+    virtual HRESULT STDMETHODCALLTYPE EnumAdapters(
+        UINT Adapter,
+        __out IDXGIAdapter **ppAdapter
+    );
 
-	virtual HRESULT STDMETHODCALLTYPE MakeWindowAssociation(
-		HWND WindowHandle,
-		UINT Flags
-	);
+    virtual HRESULT STDMETHODCALLTYPE MakeWindowAssociation(
+        HWND WindowHandle,
+        UINT Flags
+    );
 
-	virtual HRESULT STDMETHODCALLTYPE GetWindowAssociation(
-		__out HWND *pWindowHandle
-	);
+    virtual HRESULT STDMETHODCALLTYPE GetWindowAssociation(
+        __out HWND *pWindowHandle
+    );
 
-	virtual HRESULT STDMETHODCALLTYPE CreateSwapChain(
-		__in IUnknown *pDevice,
-		__in DXGI_SWAP_CHAIN_DESC *pDesc,
-		__out IDXGISwapChain **ppSwapChain
-	);
+    virtual HRESULT STDMETHODCALLTYPE CreateSwapChain(
+        __in IUnknown *pDevice,
+        __in DXGI_SWAP_CHAIN_DESC *pDesc,
+        __out IDXGISwapChain **ppSwapChain
+    );
 
-	virtual HRESULT STDMETHODCALLTYPE CreateSoftwareAdapter(
-		HMODULE Module,
-		__out IDXGIAdapter **ppAdapter
-	);
+    virtual HRESULT STDMETHODCALLTYPE CreateSoftwareAdapter(
+        HMODULE Module,
+        __out IDXGIAdapter **ppAdapter
+    );
 
-	//--- IDXGIObject methods -------------------------------------------------
-	
-	virtual HRESULT STDMETHODCALLTYPE SetPrivateData(
-		__in  REFGUID Name,
-		UINT DataSize,
-		__in_bcount(DataSize)  const void *pData
-	);
+    //--- IDXGIObject methods -------------------------------------------------
+    
+    virtual HRESULT STDMETHODCALLTYPE SetPrivateData(
+        __in  REFGUID Name,
+        UINT DataSize,
+        __in_bcount(DataSize)  const void *pData
+    );
 
-	virtual HRESULT STDMETHODCALLTYPE SetPrivateDataInterface(
-		__in  REFGUID Name,
-		__in  const IUnknown *pUnknown
-	);
+    virtual HRESULT STDMETHODCALLTYPE SetPrivateDataInterface(
+        __in  REFGUID Name,
+        __in  const IUnknown *pUnknown
+    );
 
-	virtual HRESULT STDMETHODCALLTYPE GetPrivateData(
-		__in  REFGUID Name,
-		__inout  UINT *pDataSize,
-		__out_bcount(*pDataSize)  void *pData
-	);
+    virtual HRESULT STDMETHODCALLTYPE GetPrivateData(
+        __in  REFGUID Name,
+        __inout  UINT *pDataSize,
+        __out_bcount(*pDataSize)  void *pData
+    );
 
-	virtual HRESULT STDMETHODCALLTYPE GetParent(
-		__in  REFIID riid,
-		__out  void **ppParent
-	);
+    virtual HRESULT STDMETHODCALLTYPE GetParent(
+        __in  REFIID riid,
+        __out  void **ppParent
+    );
 
 protected:
-	IDXGIFactory *m_factory;
+    IDXGIFactory *m_factory;
 };
 
 //-----------------------------------------------------------------------------

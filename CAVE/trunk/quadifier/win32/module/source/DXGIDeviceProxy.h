@@ -16,7 +16,7 @@
 //    1. The origin of this software must not be misrepresented; you must not
 //    claim that you wrote the original software.
 //
-//	  2. If you use this software in a product, an acknowledgment in the
+//    2. If you use this software in a product, an acknowledgment in the
 //    product documentation is required.
 //
 //    3. Altered source versions must be plainly marked as such, and must not
@@ -35,71 +35,71 @@
 
 struct DXGIDeviceProxy : public IDXGIDevice {
 public:
-	DXGIDeviceProxy( IDXGIDevice *device );
+    DXGIDeviceProxy( IDXGIDevice *device );
 
-	//--- IUnknown methods ----------------------------------------------------
-	
-	STDMETHOD(QueryInterface)(THIS_ REFIID riid, void** ppvObj);
+    //--- IUnknown methods ----------------------------------------------------
+    
+    STDMETHOD(QueryInterface)(THIS_ REFIID riid, void** ppvObj);
 
-	STDMETHOD_(ULONG,AddRef)(THIS);
+    STDMETHOD_(ULONG,AddRef)(THIS);
 
-	STDMETHOD_(ULONG,Release)(THIS);
+    STDMETHOD_(ULONG,Release)(THIS);
 
-	//--- IDXGIDevice methods -------------------------------------------------
+    //--- IDXGIDevice methods -------------------------------------------------
 
-	virtual HRESULT STDMETHODCALLTYPE GetAdapter( 
-		__out IDXGIAdapter **pAdapter
-	);
-        
-	virtual HRESULT STDMETHODCALLTYPE CreateSurface( 
-		__in const DXGI_SURFACE_DESC *pDesc,
-		UINT NumSurfaces,
-		DXGI_USAGE Usage,
-		__in_opt const DXGI_SHARED_RESOURCE *pSharedResource,
-		__out IDXGISurface **ppSurface
-	);
-        
-	virtual HRESULT STDMETHODCALLTYPE QueryResourceResidency( 
-		__in_ecount(NumResources) IUnknown *const *ppResources,
-		__out_ecount(NumResources) DXGI_RESIDENCY *pResidencyStatus,
-		UINT NumResources
-	);
-        
-	virtual HRESULT STDMETHODCALLTYPE SetGPUThreadPriority( 
-		INT Priority
-	);
-        
-	virtual HRESULT STDMETHODCALLTYPE GetGPUThreadPriority( 
-		__out  INT *pPriority
-	);
+    virtual HRESULT STDMETHODCALLTYPE GetAdapter( 
+        __out IDXGIAdapter **pAdapter
+    );
 
-	//--- IDXGIObject methods -------------------------------------------------
+    virtual HRESULT STDMETHODCALLTYPE CreateSurface( 
+        __in const DXGI_SURFACE_DESC *pDesc,
+        UINT NumSurfaces,
+        DXGI_USAGE Usage,
+        __in_opt const DXGI_SHARED_RESOURCE *pSharedResource,
+        __out IDXGISurface **ppSurface
+    );
 
-	virtual HRESULT STDMETHODCALLTYPE GetPrivateData(
-		__in REFGUID guid,
-		__inout UINT *pDataSize,
-		__out_bcount_opt( *pDataSize ) void *pData
-	);
+    virtual HRESULT STDMETHODCALLTYPE QueryResourceResidency( 
+        __in_ecount(NumResources) IUnknown *const *ppResources,
+        __out_ecount(NumResources) DXGI_RESIDENCY *pResidencyStatus,
+        UINT NumResources
+    );
 
-	virtual HRESULT STDMETHODCALLTYPE SetPrivateData(
-		__in REFGUID guid,
-		__in UINT DataSize,
-		__in_bcount_opt( DataSize ) const void *pData
-	);
+    virtual HRESULT STDMETHODCALLTYPE SetGPUThreadPriority( 
+        INT Priority
+    );
 
-	virtual HRESULT STDMETHODCALLTYPE SetPrivateDataInterface(
-		__in REFGUID guid,
-		__in_opt const IUnknown *pData
-	);
+    virtual HRESULT STDMETHODCALLTYPE GetGPUThreadPriority( 
+        __out  INT *pPriority
+    );
 
-	virtual HRESULT STDMETHODCALLTYPE GetParent(  
-		__in  REFIID riid,
-		__out  void **ppParent
-	);
+    //--- IDXGIObject methods -------------------------------------------------
+
+    virtual HRESULT STDMETHODCALLTYPE GetPrivateData(
+        __in REFGUID guid,
+        __inout UINT *pDataSize,
+        __out_bcount_opt( *pDataSize ) void *pData
+    );
+
+    virtual HRESULT STDMETHODCALLTYPE SetPrivateData(
+        __in REFGUID guid,
+        __in UINT DataSize,
+        __in_bcount_opt( DataSize ) const void *pData
+    );
+
+    virtual HRESULT STDMETHODCALLTYPE SetPrivateDataInterface(
+        __in REFGUID guid,
+        __in_opt const IUnknown *pData
+    );
+
+    virtual HRESULT STDMETHODCALLTYPE GetParent(  
+        __in  REFIID riid,
+        __out  void **ppParent
+    );
 
 private:
-	IDXGIDevice *m_device;
-	std::shared_ptr<DXGIAdapterProxy> m_dxgiAdapterProxy;
+    IDXGIDevice *m_device;
+    std::shared_ptr<DXGIAdapterProxy> m_dxgiAdapterProxy;
 };
 
 //-----------------------------------------------------------------------------

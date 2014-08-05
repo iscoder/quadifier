@@ -16,7 +16,7 @@
 //    1. The origin of this software must not be misrepresented; you must not
 //    claim that you wrote the original software.
 //
-//	  2. If you use this software in a product, an acknowledgment in the
+//    2. If you use this software in a product, an acknowledgment in the
 //    product documentation is required.
 //
 //    3. Altered source versions must be plainly marked as such, and must not
@@ -37,20 +37,20 @@
  */
 class IDirect3DDevice9Proxy: public IDirect3DDevice9 {
 public:
-	IDirect3DDevice9Proxy(
-		IDirect3DDevice9 *device,
-		IDirect3D9 *direct3D
-	);
+    IDirect3DDevice9Proxy(
+        IDirect3DDevice9 *device,
+        IDirect3D9 *direct3D
+    );
 
-	virtual ~IDirect3DDevice9Proxy();
+    virtual ~IDirect3DDevice9Proxy();
 
-	//--- IUnknown methods ----------------------------------------------------
-	
+    //--- IUnknown methods ----------------------------------------------------
+    
     STDMETHOD(QueryInterface)(THIS_ REFIID riid, void** ppvObj);
     STDMETHOD_(ULONG,AddRef)(THIS);
     STDMETHOD_(ULONG,Release)(THIS);
 
-	//--- IDirect3DDevice9 methods --------------------------------------------
+    //--- IDirect3DDevice9 methods --------------------------------------------
     
     STDMETHOD(TestCooperativeLevel)(THIS);
     STDMETHOD_(UINT, GetAvailableTextureMem)(THIS);
@@ -170,11 +170,11 @@ public:
     STDMETHOD(CreateQuery)(THIS_ D3DQUERYTYPE Type,IDirect3DQuery9** ppQuery);
 
 private:
-	IDirect3DDevice9 *m_device; ///< The real D3D device
+    IDirect3DDevice9 *m_device; ///< The real D3D device
 
-	IDirect3D9 *m_direct3D;     ///< The D3D interface
+    IDirect3D9 *m_direct3D;     ///< The D3D interface
 
-	Quadifier m_quad;           ///< The DX/OpenGL renderer instance
+    Quadifier m_quad;           ///< The DX/OpenGL renderer instance
 };
 
 //-----------------------------------------------------------------------------

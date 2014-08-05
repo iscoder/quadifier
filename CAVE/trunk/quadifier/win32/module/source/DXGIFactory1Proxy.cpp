@@ -33,139 +33,139 @@ using namespace hive;
 //-----------------------------------------------------------------------------
 
 DXGIFactory1Proxy::DXGIFactory1Proxy(
-	IDXGIFactory1 *factory
+    IDXGIFactory1 *factory
 )
-	: m_factory( factory )
+    : m_factory( factory )
 {
-	Log::print() << "DXGIFactory1Proxy(" << factory << ")\n";
+    Log::print() << "DXGIFactory1Proxy(" << factory << ")\n";
 }
 
 //-----------------------------------------------------------------------------
 
 HRESULT DXGIFactory1Proxy::QueryInterface( REFIID riid, void **ppvObj)
 {
-	Log::print() << "DXGIFactory1Proxy::QueryInterface("
-				 << GUIDtoObjectName(riid) << ")\n";
-	HRESULT result = m_factory->QueryInterface( riid, ppvObj ); 
-	return result; 
+    Log::print() << "DXGIFactory1Proxy::QueryInterface("
+                 << GUIDtoObjectName(riid) << ")\n";
+    HRESULT result = m_factory->QueryInterface( riid, ppvObj ); 
+    return result; 
 }
 
 //-----------------------------------------------------------------------------
 
 ULONG DXGIFactory1Proxy::AddRef()
 {
-	return m_factory->AddRef();
+    return m_factory->AddRef();
 }
 
 //-----------------------------------------------------------------------------
 
 ULONG DXGIFactory1Proxy::Release()
 {
-	return m_factory->Release();
+    return m_factory->Release();
 }
 
 //-----------------------------------------------------------------------------
 
 HRESULT STDMETHODCALLTYPE DXGIFactory1Proxy::EnumAdapters(
-	UINT Adapter,
-	__out IDXGIAdapter **ppAdapter
+    UINT Adapter,
+    __out IDXGIAdapter **ppAdapter
 ) {
-	return m_factory->EnumAdapters( Adapter, ppAdapter );
+    return m_factory->EnumAdapters( Adapter, ppAdapter );
 }
 
 //-----------------------------------------------------------------------------
 
 HRESULT STDMETHODCALLTYPE DXGIFactory1Proxy::MakeWindowAssociation(
-	HWND WindowHandle,
-	UINT Flags
+    HWND WindowHandle,
+    UINT Flags
 ) {
-	return m_factory->MakeWindowAssociation( WindowHandle, Flags );
+    return m_factory->MakeWindowAssociation( WindowHandle, Flags );
 }
 
 //-----------------------------------------------------------------------------
 
 HRESULT STDMETHODCALLTYPE DXGIFactory1Proxy::GetWindowAssociation(
-	__out HWND *pWindowHandle
+    __out HWND *pWindowHandle
 ) {
-	return m_factory->GetWindowAssociation( pWindowHandle );
+    return m_factory->GetWindowAssociation( pWindowHandle );
 }
 
 //-----------------------------------------------------------------------------
 
 HRESULT STDMETHODCALLTYPE DXGIFactory1Proxy::CreateSwapChain(
-	__in IUnknown *pDevice,
-	__in DXGI_SWAP_CHAIN_DESC *pDesc,
-	__out IDXGISwapChain **ppSwapChain
+    __in IUnknown *pDevice,
+    __in DXGI_SWAP_CHAIN_DESC *pDesc,
+    __out IDXGISwapChain **ppSwapChain
 ) {
-	HRESULT result = m_factory->CreateSwapChain( pDevice, pDesc, ppSwapChain );
-	Log::print() << "CreateSwapChain(" << pDevice << ',' << pDesc << ',' << ppSwapChain << ")"
-		<< " = " << result << ',' << *ppSwapChain << '\n';
-	return result;
+    HRESULT result = m_factory->CreateSwapChain( pDevice, pDesc, ppSwapChain );
+    Log::print() << "CreateSwapChain(" << pDevice << ',' << pDesc << ',' << ppSwapChain << ")"
+        << " = " << result << ',' << *ppSwapChain << '\n';
+    return result;
 }
 
 //-----------------------------------------------------------------------------
 
 HRESULT STDMETHODCALLTYPE DXGIFactory1Proxy::CreateSoftwareAdapter(
-	HMODULE Module,
-	__out IDXGIAdapter **ppAdapter
+    HMODULE Module,
+    __out IDXGIAdapter **ppAdapter
 ) {
-	return m_factory->CreateSoftwareAdapter( Module, ppAdapter );
+    return m_factory->CreateSoftwareAdapter( Module, ppAdapter );
 }
 
 //-----------------------------------------------------------------------------
 
 HRESULT STDMETHODCALLTYPE DXGIFactory1Proxy::SetPrivateData(
-	__in  REFGUID Name,
-	UINT DataSize,
-	__in_bcount(DataSize)  const void *pData
+    __in  REFGUID Name,
+    UINT DataSize,
+    __in_bcount(DataSize)  const void *pData
 ) {
-	return m_factory->SetPrivateData( Name, DataSize, pData );
+    return m_factory->SetPrivateData( Name, DataSize, pData );
 }
 
 //-----------------------------------------------------------------------------
 
 HRESULT STDMETHODCALLTYPE DXGIFactory1Proxy::SetPrivateDataInterface(
-	__in  REFGUID Name,
-	__in  const IUnknown *pUnknown
+    __in  REFGUID Name,
+    __in  const IUnknown *pUnknown
 ) {
-	return m_factory->SetPrivateDataInterface( Name, pUnknown );
+    return m_factory->SetPrivateDataInterface( Name, pUnknown );
 }
 
 //-----------------------------------------------------------------------------
 
 HRESULT STDMETHODCALLTYPE DXGIFactory1Proxy::GetPrivateData(
-	__in  REFGUID Name,
-	__inout  UINT *pDataSize,
-	__out_bcount(*pDataSize) void *pData
+    __in  REFGUID Name,
+    __inout  UINT *pDataSize,
+    __out_bcount(*pDataSize) void *pData
 ) {
-	return m_factory->GetPrivateData( Name, pDataSize, pData );
+    return m_factory->GetPrivateData( Name, pDataSize, pData );
 }
 
 //-----------------------------------------------------------------------------
 
 HRESULT STDMETHODCALLTYPE DXGIFactory1Proxy::GetParent(
-	__in  REFIID riid,
-	__out  void **ppParent
+    __in  REFIID riid,
+    __out  void **ppParent
 ) {
-	return m_factory->GetParent( riid, ppParent );
+    return m_factory->GetParent( riid, ppParent );
 }
 
 //-----------------------------------------------------------------------------
 
 HRESULT STDMETHODCALLTYPE DXGIFactory1Proxy::EnumAdapters1(
-	UINT Adapter,
-	__out IDXGIAdapter1 **ppAdapter
+    UINT Adapter,
+    __out IDXGIAdapter1 **ppAdapter
 ) {
-	return dynamic_cast<IDXGIFactory1*>(m_factory)->EnumAdapters1(
-		Adapter, ppAdapter
-	);
+    return dynamic_cast<IDXGIFactory1*>(m_factory)->EnumAdapters1(
+        Adapter, ppAdapter
+    );
 }
 
 //-----------------------------------------------------------------------------
 
 BOOL STDMETHODCALLTYPE DXGIFactory1Proxy::IsCurrent()
 {
-	return dynamic_cast<IDXGIFactory1*>(m_factory)->IsCurrent();
+    return dynamic_cast<IDXGIFactory1*>(m_factory)->IsCurrent();
 }
 
 //-----------------------------------------------------------------------------
