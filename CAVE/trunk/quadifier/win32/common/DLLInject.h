@@ -16,7 +16,7 @@
 //    1. The origin of this software must not be misrepresented; you must not
 //    claim that you wrote the original software.
 //
-//	  2. If you use this software in a product, an acknowledgment in the
+//    2. If you use this software in a product, an acknowledgment in the
 //    product documentation is required.
 //
 //    3. Altered source versions must be plainly marked as such, and must not
@@ -45,10 +45,10 @@ bool injectDLL( DWORD processId, const std::string & DLLName );
  * otherwise.
  */
 bool createProcessWithDLL(
-	const std::string & applicationName,
-	const std::string & DLLName,
-	const std::string & commandLine = "",
-	const std::string & currentDirectory = ""
+    const std::string & applicationName,
+    const std::string & DLLName,
+    const std::string & commandLine = "",
+    const std::string & currentDirectory = ""
 );
 
 } // namespace hive
