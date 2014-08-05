@@ -3,7 +3,7 @@
 
 //-----------------------------------------------------------------------------
 //
-// Copyright (c) 2013 James Ward, University of Hull
+// Copyright (C) 2013-14 James Ward, University of Hull
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
