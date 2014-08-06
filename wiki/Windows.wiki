@@ -8,3 +8,5 @@ The Windows version of Quadifier consists of three components:
  * Scripts: a set of Unity scripts are used to render the different views needed by Quadifier.
 
 The Quadifier Module is a DLL which is injected into Unity. It intercepts the Direct3D rendering calls made by Unity, and redirects them to an off-screen buffer. They are then rendered back to the screen using OpenGL quad-buffer stereo.
+
+We use scripts in Unity to render the left and right eye views. These are then captured and redirected to the GL_BACK_LEFT and GL_BACK_RIGHT buffers by Quadifier.
