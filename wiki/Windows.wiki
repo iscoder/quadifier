@@ -1,0 +1,10 @@
+#summary Using Quadifier on Windows
+
+= Using Quadifier on Windows =
+
+The Windows version of Quadifier consists of three components:
+ * Module: this is a DLL that is injected into Unity.
+ * Launcher: this is an executable which starts Unity and injects the Module into Unity.
+ * Scripts: a set of Unity scripts are used to render the different views needed by Quadifier.
+
+The Quadifier Module is a DLL which is injected into Unity. It intercepts the Direct3D rendering calls made by Unity, and redirects them to an off-screen buffer. They are then rendered back to the screen using OpenGL quad-buffer stereo.
