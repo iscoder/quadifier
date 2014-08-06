@@ -3,8 +3,8 @@
 = Using Quadifier on Linux =
 
 The Linux version of Quadifier consists of two components:
- * quadifier.so: this module is injected into Unity.
- * Scripts: a set of Unity scripts are used to render the different views needed by Quadifier.
+ * *quadifier.so*: this module is injected into Unity.
+ * *Scripts*: a set of Unity scripts are used to render the different views needed by Quadifier.
 
 The implementation for Linux is simpler than the [Windows Windows] implementation because Linux already uses OpenGL for rendering, so there is no need to intercept and translate Direct3D calls.
 
