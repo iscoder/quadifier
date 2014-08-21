@@ -24,4 +24,4 @@ The Unity window is run in full-screen at 5120x1280 pixels, to cover the entire 
 
 [http://quadifier.googlecode.com/svn/images/unity_viewport.jpg]
 
-This is accomplished using the [https://quadifier.google.com/svn/trunk/unity/CAVEUnity1/Assets/Scripts/Quadifier.js Quadifier.js] script in Unity. This reads an XML configuration file called [https://quadifier.google.com/svn/trunk/unity/CAVEUnity1/settings.xml settings.xml], which describes the size and position of each screen. The configuration file is described in more detail [ConfigurationFile here]
+This is accomplished using the [http://quadifier.google.com/svn/trunk/unity/CAVEUnity1/Assets/Scripts/Quadifier.js Quadifier.js] script in Unity. This reads an XML configuration file called [http://quadifier.google.com/svn/trunk/unity/CAVEUnity1/settings.xml settings.xml], which describes the size and position of each screen. The configuration file is described in more detail [ConfigurationFiles here]
