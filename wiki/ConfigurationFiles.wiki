@@ -33,6 +33,6 @@ For example, if we had a single screen that was 3m by 2.4m, it might look someth
   * *height*: 2.4
   * *viewport*: (0,0,1,1) - using the whole Unity Viewport
 
-If we have multiple screens, we can define their name, position and orientation however we wish, and can use the viewport to specify which region of the Unity viewport is used to render that view. For example, we could divide the Unity viewport into two regions, one representing the wall, and one for the floor.
+If we have [MultipleScreens multiple screens], we can define their name, position and orientation however we wish, and can use the viewport to specify which region of the Unity viewport is used to render that view. For example, we could divide the Unity viewport into two regions, one representing the wall, and one for the floor.
 
 The CAVEUnity1 project provided in the source tree includes a complete example for a 4 sided CAVE type display, with Front, Left, Right and Floor projection.
