@@ -9,6 +9,10 @@ The easiest way to create a suitable file is to edit one of the existing example
 
   [http://www.microsoft.com/en-us/download/details.aspx?id=7973 Microsoft XML Notepad 2007]
 
+The XML editor makes it easy to edit the parameters for each projection screen:
+
+  [http://quadifier.googlecode.com/svn/images/xml_editing.jpg]
+
 Here is a brief description of the file contents:
   * *screens*: collection of projection screens (see below)
   * *eyeSeparation*: the viewer's eye separation, usually in metres (e.g. 0.07)
